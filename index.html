@@ -1,0 +1,826 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ganesh Brothers</title>
+<meta name="description" content="Ganesh Brothers — Indian groceries in Ellicott City, MD. Browse spices, rice, lentils, fresh produce, frozen foods, snacks and sweets, plan recipes and build your shopping list.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEEAE8; --surface:#FBF9F8; --surface-2:#F1EDEA; --ink:#141210; --muted:#6F6862; --line:#DDD6D1;
+  --accent:#F27A1A; --accent-ink:#B85000; --accent-btn:#C9520A; --accent-btn-hover:#AE4608; --accent-soft:#FDE7D3;
+  --card-top:#E2DDDA; --card-bot:#F8F6F5; --rim:#CBD2DA; --dark:#2E2B29;
+  --green:#1F7A4D; --green-soft:#DDF0E4; --red:#B3261E; --red-soft:#FBE3E0; --amber:#8A5A00; --amber-soft:#FFF0C7;
+  --shadow:0 22px 34px -22px rgba(60,40,25,.45);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#151311; --surface:#221E1B; --surface-2:#2A2522; --ink:#F5F0EB; --muted:#B3AAA2; --line:#3A332E;
+    --accent:#FF8A2B; --accent-ink:#FFA552; --accent-btn:#E8650C; --accent-btn-hover:#FF7A1F; --accent-soft:#3D2614;
+    --card-top:#2D2825; --card-bot:#1E1A18; --rim:#4A5058; --dark:#0E0C0B;
+    --green:#5CC291; --green-soft:#16301F; --red:#F2867D; --red-soft:#3A1A17; --amber:#F2C25B; --amber-soft:#382A0E;
+    --shadow:0 22px 34px -22px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#151311; --surface:#221E1B; --surface-2:#2A2522; --ink:#F5F0EB; --muted:#B3AAA2; --line:#3A332E;
+  --accent:#FF8A2B; --accent-ink:#FFA552; --accent-btn:#E8650C; --accent-btn-hover:#FF7A1F; --accent-soft:#3D2614;
+  --card-top:#2D2825; --card-bot:#1E1A18; --rim:#4A5058; --dark:#0E0C0B;
+  --green:#5CC291; --green-soft:#16301F; --red:#F2867D; --red-soft:#3A1A17; --amber:#F2C25B; --amber-soft:#382A0E;
+  --shadow:0 22px 34px -22px rgba(0,0,0,.8);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 Poppins,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2{font-family:"Playfair Display",Georgia,serif;line-height:1.04;margin:0 0 .35em;letter-spacing:-.01em}
+h2{font-size:clamp(2rem,4.2vw,3rem)}
+h3{margin:0}
+a{color:inherit}
+button{font:inherit;color:inherit;cursor:pointer}
+.wrap{max-width:1200px;margin:0 auto;padding:0 16px}
+section{padding:72px 0;position:relative}
+.eyebrow{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ink);font-weight:600;margin-bottom:10px}
+.sub{color:var(--muted);margin:0 0 28px;max-width:58ch}
+.sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:8px}
+
+/* pills */
+.pill{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:999px;padding:14px 30px;font-weight:500;text-decoration:none;background:var(--surface);color:var(--ink);box-shadow:0 8px 20px -14px rgba(0,0,0,.4);transition:transform .15s,background .15s}
+.pill:hover{transform:translateY(-1px)}
+.pill.primary{background:var(--accent-btn);color:#fff}
+.pill.primary:hover{background:var(--accent-btn-hover)}
+.pill.sm{padding:10px 22px}
+
+/* header */
+header.top{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(12px)}
+.top .wrap{display:flex;align-items:center;gap:24px;height:80px}
+.logo{font-family:"Playfair Display",serif;font-weight:700;font-size:1.7rem;text-decoration:none;white-space:nowrap;letter-spacing:-.01em}
+.logo em{font-style:normal;color:var(--accent)}
+nav.main{display:flex;gap:34px;margin:0 auto}
+nav.main a{text-decoration:none;font-size:1.02rem;font-weight:400}
+nav.main a:hover,nav.main a.active{color:var(--accent-ink)}
+.actions{display:flex;align-items:center;gap:18px}
+.bag{position:relative;border:0;background:none;padding:6px;display:grid;place-items:center}
+.bag .count{position:absolute;top:-2px;right:-4px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--accent);color:#fff;font-size:.68rem;font-weight:600;display:grid;place-items:center}
+.bag .count:empty,.bag .count[data-zero]{width:9px;min-width:9px;height:9px;padding:0;top:2px;right:2px;font-size:0}
+@media (max-width:900px){nav.main{display:none}.actions{margin-left:auto}.top .pill{display:none}}
+
+/* floating garnish */
+.float{position:absolute;pointer-events:none;filter:drop-shadow(0 14px 14px rgba(30,40,20,.25));animation:bob 7s ease-in-out infinite;rotate:var(--r,0deg)}
+.float.blur{filter:blur(3px) drop-shadow(0 14px 14px rgba(30,40,20,.2))}
+@keyframes bob{50%{translate:0 -12px}}
+@media (prefers-reduced-motion:reduce){.float{animation:none}}
+
+/* hero */
+.hero{padding:40px 0 30px}
+.hero-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:40px;align-items:center}
+.hero h1{font-size:clamp(2.7rem,6.4vw,5rem);font-weight:800;margin-bottom:22px}
+.hero .lead{color:var(--muted);font-size:1.05rem;max-width:46ch;margin:0 0 30px}
+.cta{display:flex;flex-wrap:wrap;gap:14px}
+.fresh{margin-top:40px}
+.fresh .label{font-weight:500;margin-bottom:10px}
+.stack{display:flex;align-items:center}
+.stack > *{width:48px;height:48px;border-radius:50%;border:3px solid var(--bg);margin-left:-12px;overflow:hidden;background:var(--surface-2);position:relative;display:grid;place-items:center;font-size:.75rem;font-weight:600}
+.stack > :first-child{margin-left:0}
+.stack .more{background:var(--dark);color:#fff}
+.status{display:inline-flex;align-items:center;gap:8px;font-weight:500;font-size:.88rem;margin-top:12px;color:var(--muted)}
+.status .dot{width:9px;height:9px;border-radius:50%;background:var(--red)}
+.status.open .dot{background:#2EAD62;box-shadow:0 0 0 4px rgba(46,173,98,.18)}
+.status b{color:var(--ink);font-weight:600}
+.hero-art{position:relative;aspect-ratio:1;max-width:560px;width:100%;justify-self:center}
+.thali{width:100%;height:100%;display:block;filter:drop-shadow(0 34px 40px rgba(40,30,20,.28));animation:spin 120s linear infinite}
+@keyframes spin{to{rotate:360deg}}
+@media (prefers-reduced-motion:reduce){.thali{animation:none}}
+.deal{position:absolute;top:6%;left:-4%;background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(8px);border-radius:16px;padding:16px 20px 14px;box-shadow:0 20px 40px -18px rgba(0,0,0,.35);text-decoration:none;display:block;min-width:170px}
+.deal .ic{position:absolute;top:-18px;right:18px;width:36px;height:36px;border-radius:50%;background:var(--surface);display:grid;place-items:center;box-shadow:0 6px 14px -6px rgba(0,0,0,.4);color:var(--accent-ink)}
+.deal b{font-size:1.5rem;font-weight:600;display:block;line-height:1.1}
+.deal small{font-size:.78rem;color:var(--muted)}
+.deal small span{color:var(--accent-ink);font-weight:600}
+@media (max-width:900px){.hero-grid{grid-template-columns:1fr}.hero-art{max-width:420px}.deal{left:0}}
+
+/* facts strip */
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:30px}
+.fact{display:flex;gap:14px;align-items:center;background:linear-gradient(180deg,var(--card-bot),var(--card-top));border-radius:22px;padding:16px 18px;box-shadow:var(--shadow)}
+.fact .ic{width:44px;height:44px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);display:grid;place-items:center;flex:none}
+.fact small{display:block;color:var(--muted);font-size:.8rem}
+.fact a,.fact div{font-weight:500}
+@media (max-width:900px){.facts{grid-template-columns:1fr}}
+
+/* tabs & chips */
+.tabs{display:inline-flex;background:var(--surface);border-radius:999px;padding:5px;box-shadow:0 8px 20px -14px rgba(0,0,0,.4)}
+.tabs button{border:0;background:none;padding:9px 20px;border-radius:999px;font-weight:500;color:var(--muted)}
+.tabs button[aria-selected="true"]{background:var(--dark);color:#fff}
+.chips{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 12px;margin-bottom:6px;scrollbar-width:none}
+.chip{flex:none;border:0;background:var(--surface);padding:9px 18px;border-radius:999px;font-weight:500;white-space:nowrap;box-shadow:0 6px 16px -12px rgba(0,0,0,.4)}
+.chip[aria-pressed="true"]{background:var(--accent-btn);color:#fff}
+
+/* product + recipe cards */
+.card{position:relative;margin-top:78px;padding:96px 20px 20px;border-radius:30px;background:linear-gradient(180deg,var(--card-top) 0%,var(--card-bot) 70%);box-shadow:var(--shadow);display:flex;flex-direction:column;gap:3px;text-align:left;border:0}
+.plate{position:absolute;top:-66px;left:50%;translate:-50% 0;width:156px;height:156px;border-radius:50%;overflow:hidden;background:var(--surface-2);border:7px solid var(--rim);box-shadow:0 18px 26px -12px rgba(40,30,20,.45);display:grid;place-items:center;font-size:3rem}
+.photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.card.is-out .plate .photo{filter:grayscale(.9);opacity:.6}
+.cartb{position:absolute;top:-58px;left:calc(50% + 40px);width:48px;height:48px;border:0;border-radius:50% 50% 50% 14px;background:var(--dark);color:#fff;display:grid;place-items:center;box-shadow:0 10px 18px -8px rgba(0,0,0,.5);transition:transform .15s,background .15s;z-index:1}
+.cartb:hover{transform:scale(1.07)}
+.cartb.in{background:var(--accent-btn)}
+.cartb.in b{font-size:1rem}
+.cartb.off{background:#9A9490;cursor:not-allowed}
+.tags{display:flex;gap:6px;flex-wrap:wrap;min-height:20px;margin-bottom:4px}
+.tag{font-size:.66rem;font-weight:600;padding:2px 9px;border-radius:999px;text-transform:uppercase;letter-spacing:.05em}
+.tag.sale{background:var(--accent-soft);color:var(--accent-ink)}
+.tag.new{background:var(--green-soft);color:var(--green)}
+.tag.low{background:var(--amber-soft);color:var(--amber)}
+.tag.out{background:var(--red-soft);color:var(--red)}
+.tag.diet{background:var(--surface);color:var(--muted)}
+.card h3,.card .name{font-weight:500;font-size:1.08rem;display:block}
+.card .sub2{color:var(--muted);font-size:.84rem;display:block}
+.foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;padding-top:18px}
+.price{font-weight:600;font-size:1.02rem}
+.price s{color:var(--muted);font-weight:400;font-size:.82rem;margin-left:6px}
+.stepper{display:flex;align-items:center;gap:4px;background:var(--surface);border-radius:999px;padding:3px}
+.stepper button{border:0;background:var(--surface-2);width:28px;height:28px;border-radius:50%;font-weight:600}
+.stepper span{min-width:20px;text-align:center;font-weight:600;font-size:.88rem}
+.alt{margin-top:12px;background:var(--red-soft);border-radius:16px;padding:10px 12px;font-size:.8rem}
+.alt b{display:block;font-weight:600}
+.alt button{margin-top:6px;border:0;background:var(--dark);color:#fff;border-radius:999px;padding:5px 12px;font-weight:500;font-size:.78rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(225px,1fr));gap:0 24px}
+.result-meta{color:var(--muted);font-size:.88rem}
+.empty{grid-column:1/-1;margin-top:40px;padding:40px;text-align:center;color:var(--muted);border:2px dashed var(--line);border-radius:30px}
+
+/* carousel */
+.rail-wrap{position:relative}
+.rail{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(230px,250px);gap:26px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 6px 34px;scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+.rail > *{scroll-snap-align:start}
+.arrow{position:absolute;top:58%;width:54px;height:54px;border-radius:50%;border:0;display:grid;place-items:center;z-index:2;box-shadow:0 12px 20px -10px rgba(0,0,0,.5)}
+.arrow.prev{left:-70px;background:var(--dark);color:#fff}
+.arrow.next{right:-70px;background:var(--accent-btn);color:#fff}
+@media (max-width:1360px){.arrow.prev{left:-6px}.arrow.next{right:-6px}}
+@media (max-width:700px){.arrow,.float.blur{display:none}}
+
+/* recipes */
+.recipe{cursor:pointer;font:inherit;color:inherit}
+.recipe .sub2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.recipe .go{width:38px;height:38px;border-radius:50%;background:var(--accent-btn);color:#fff;display:grid;place-items:center;flex:none;transition:transform .15s}
+.recipe:hover .go{transform:translateX(3px)}
+.recipe .meta{font-size:.8rem;color:var(--muted)}
+
+/* search toolbar */
+.toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:8px 0 14px}
+.search{flex:1 1 280px;display:flex;align-items:center;gap:10px;background:var(--surface);border-radius:999px;padding:0 20px;box-shadow:0 8px 20px -14px rgba(0,0,0,.4)}
+.search input{border:0;background:none;outline:none;padding:14px 0;width:100%;font:inherit;color:var(--ink)}
+.search:focus-within{box-shadow:0 0 0 3px var(--accent-soft)}
+select,.toggle{background:var(--surface);border:0;border-radius:999px;padding:12px 18px;font:inherit;color:var(--ink);box-shadow:0 8px 20px -14px rgba(0,0,0,.4)}
+.toggle{display:flex;align-items:center;gap:8px;cursor:pointer}
+.toggle input{accent-color:var(--accent-btn)}
+
+/* dialog */
+dialog{border:0;border-radius:30px;padding:0;max-width:600px;width:calc(100% - 32px);background:var(--surface);color:var(--ink);box-shadow:0 30px 70px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(20,14,8,.5);backdrop-filter:blur(3px)}
+.dlg-hero{position:relative;height:210px;display:grid;place-items:center;font-size:4rem;background:var(--surface-2)}
+.x{border:0;background:var(--surface-2);width:38px;height:38px;border-radius:50%;font-size:1.2rem;flex:none}
+.dlg-hero .x{position:absolute;top:14px;right:14px;z-index:1;background:rgba(255,255,255,.92);color:#141210}
+.dlg-head{padding:20px 24px 8px}
+.dlg-head h3{font-family:"Playfair Display",serif;font-size:1.8rem}
+.dlg-head p{margin:4px 0 0;color:var(--muted)}
+.dlg-body{padding:4px 24px;max-height:52vh;overflow:auto}
+.ing{display:flex;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.ing input{width:18px;height:18px;accent-color:var(--accent-btn);flex:none}
+.ing .th{position:relative;width:42px;height:42px;flex:none;border-radius:50%;overflow:hidden;background:var(--surface-2);display:grid;place-items:center;font-size:1.1rem}
+.ing .nm{font-weight:500}
+.ing .q{color:var(--muted);font-size:.82rem}
+.ing .swap{font-size:.8rem;color:var(--red)}
+.ing .home{font-size:.78rem;color:var(--muted);font-style:italic}
+.ing .pr{margin-left:auto;font-weight:600;white-space:nowrap}
+.steps{margin:12px 0 6px;padding-left:20px;color:var(--muted);font-size:.9rem}
+.dlg-foot{padding:16px 24px 24px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--line)}
+.dlg-foot .pill{flex:1}
+
+/* visit */
+.visit-grid{display:grid;grid-template-columns:1fr 1.25fr;gap:24px}
+.panel{background:linear-gradient(180deg,var(--card-bot),var(--card-top));border-radius:30px;padding:28px;box-shadow:var(--shadow)}
+.hours{width:100%;border-collapse:collapse}
+.hours td{padding:9px 0;border-bottom:1px solid var(--line)}
+.hours td:last-child{text-align:right}
+.hours tr.today td{font-weight:600;color:var(--accent-ink)}
+.map{border:0;width:100%;height:100%;min-height:340px;border-radius:30px;box-shadow:var(--shadow)}
+@media (max-width:900px){.visit-grid{grid-template-columns:1fr}}
+
+/* faq */
+details{background:var(--surface);border-radius:22px;padding:0 22px;margin-bottom:12px;box-shadow:0 8px 20px -16px rgba(0,0,0,.4)}
+summary{cursor:pointer;padding:18px 0;font-weight:500;list-style:none;display:flex;justify-content:space-between;gap:12px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);display:grid;place-items:center;font-size:1.1rem;flex:none}
+details[open] summary::after{content:"–";background:var(--accent-btn);color:#fff}
+details p{margin:0 0 18px;color:var(--muted)}
+
+footer{padding:36px 0 96px;color:var(--muted);font-size:.88rem}
+footer .wrap{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;border-top:1px solid var(--line);padding-top:26px}
+
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(20,14,8,.45);opacity:0;pointer-events:none;transition:.2s;z-index:40}
+.scrim.on{opacity:1;pointer-events:auto}
+aside.drawer{position:fixed;top:0;right:0;height:100%;width:min(440px,100%);background:var(--surface);z-index:50;transform:translateX(100%);transition:transform .25s ease,visibility .25s;visibility:hidden;display:flex;flex-direction:column;box-shadow:-10px 0 40px rgba(0,0,0,.2);border-radius:30px 0 0 30px}
+aside.drawer.on{transform:none;visibility:visible}
+.dr-head{padding:22px 24px 14px;display:flex;align-items:center;gap:10px}
+.dr-head h3{font-family:"Playfair Display",serif;font-size:1.6rem}
+.dr-head .n{background:var(--accent-btn);color:#fff;border-radius:999px;min-width:26px;height:26px;padding:0 8px;display:grid;place-items:center;font-size:.8rem;font-weight:600}
+.dr-head .x{margin-left:auto}
+.dr-body{flex:1;overflow:auto;padding:0 24px}
+.dr-group{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-ink);font-weight:600;margin:18px 0 4px}
+.li{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.li input[type=checkbox]{width:20px;height:20px;accent-color:var(--green);flex:none}
+.li .e{position:relative;width:46px;height:46px;flex:none;border-radius:50%;overflow:hidden;background:var(--surface-2);display:grid;place-items:center;font-size:1.2rem;border:3px solid var(--rim)}
+.li .t{flex:1;min-width:0}
+.li .t .n{font-weight:500}
+.li.done .t .n{text-decoration:line-through;color:var(--muted)}
+.li .t small{display:block;color:var(--muted);font-size:.76rem}
+.li .t .oos{color:var(--red);font-size:.78rem}
+.li .t .oos button{border:0;background:none;color:var(--ink);text-decoration:underline;font-weight:600;padding:0;font-size:.78rem}
+.mini{display:flex;align-items:center;gap:4px}
+.mini button{border:0;background:var(--surface-2);width:26px;height:26px;border-radius:50%;font-weight:600}
+.mini span{min-width:18px;text-align:center;font-weight:600;font-size:.88rem}
+.rm{border:0;background:none;color:var(--muted);font-size:1rem;padding:4px}
+.custom{display:flex;gap:8px;margin:6px 0 10px}
+.custom input{flex:1;border:0;background:var(--surface-2);color:var(--ink);border-radius:999px;padding:12px 16px;font:inherit}
+.custom button{border:0;background:var(--dark);color:#fff;border-radius:999px;padding:0 18px;font-weight:500}
+.dr-foot{padding:18px 24px 24px;background:var(--surface-2);border-radius:30px 0 0 0}
+.total{display:flex;justify-content:space-between;font-weight:600;font-size:1.1rem}
+.dr-foot small{color:var(--muted);display:block;margin-bottom:14px}
+.dr-actions{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8px}
+.dr-actions button{border:0;background:var(--surface);border-radius:999px;padding:11px 6px;font-weight:500;font-size:.88rem}
+.dr-actions button.primary{background:var(--accent-btn);color:#fff}
+
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,120px);background:var(--dark);color:#fff;padding:12px 22px;border-radius:999px;font-weight:500;z-index:60;transition:transform .25s;max-width:calc(100% - 32px);text-align:center}
+.toast.on{transform:translate(-50%,0)}
+.fab{position:fixed;right:16px;bottom:16px;z-index:25;display:none;align-items:center;gap:8px;border:0;background:var(--dark);color:#fff;border-radius:999px;padding:12px 18px;font-weight:500;box-shadow:0 10px 24px rgba(0,0,0,.3)}
+.fab span{background:var(--accent);border-radius:999px;min-width:22px;height:22px;padding:0 6px;display:grid;place-items:center;font-size:.75rem}
+@media (max-width:900px){.fab{display:flex}}
+
+#printArea{display:none}
+@media print{
+  body > *:not(#printArea){display:none !important}
+  #printArea{display:block;color:#000;font:13pt/1.5 Poppins,sans-serif}
+  #printArea h1{font-size:20pt}
+  #printArea li{list-style:none;padding:3px 0}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#63B54E"/><stop offset="1" stop-color="#1F5F27"/></linearGradient>
+    <symbol id="leaf" viewBox="0 0 100 120"><path d="M50 4 C88 26 96 80 52 116 C8 82 12 30 50 4 Z" fill="url(#lg)"/><path d="M51 12 C50 50 52 82 52 112" stroke="#A7DA92" stroke-width="2.5" fill="none" opacity=".85"/><path d="M51 38 L30 26 M51 58 L25 47 M52 78 L30 71 M51 38 L73 28 M51 58 L77 49 M52 78 L73 72" stroke="#A7DA92" stroke-width="1.6" opacity=".6"/></symbol>
+    <symbol id="tomato" viewBox="0 0 100 100"><circle cx="50" cy="55" r="42" fill="#E1352B"/><circle cx="50" cy="55" r="42" fill="none" stroke="#B5241C" stroke-width="2"/><ellipse cx="34" cy="42" rx="11" ry="6" fill="#fff" opacity=".35" transform="rotate(-30 34 42)"/><path d="M50 16 l6 12 l13 -4 l-8 11 l11 8 l-14 1 l-7 12 l-4 -13 l-13 -2 l11 -8 l-7 -12 z" fill="#2F7D32"/></symbol>
+    <symbol id="chili" viewBox="0 0 170 60"><path d="M18 22 C64 14 124 20 160 48 C116 32 62 36 18 38 Z" fill="#3E8E2F"/><path d="M30 25 C70 20 110 24 140 38" stroke="#fff" stroke-width="3" opacity=".3" fill="none"/><ellipse cx="16" cy="30" rx="9" ry="11" fill="#2F6E2A"/><path d="M9 30 q-7 -6 -4 -22" stroke="#2F6E2A" stroke-width="4" fill="none" stroke-linecap="round"/></symbol>
+    <symbol id="i-cart" viewBox="0 0 24 24"><path d="M3 4h2l2.2 10.2a1.5 1.5 0 0 0 1.5 1.2h8.6a1.5 1.5 0 0 0 1.5-1.1L21 8H6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9.5" cy="19.5" r="1.4" fill="currentColor"/><circle cx="17" cy="19.5" r="1.4" fill="currentColor"/></symbol>
+    <symbol id="i-bag" viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 10V7a3 3 0 0 1 6 0v3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-pct" viewBox="0 0 24 24"><path d="M12 2l2.4 2.1 3.2-.3.9 3.1 2.8 1.6-1.2 3 1.2 3-2.8 1.6-.9 3.1-3.2-.3L12 22l-2.4-2.1-3.2.3-.9-3.1-2.8-1.6 1.2-3-1.2-3 2.8-1.6.9-3.1 3.2.3Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 15l6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="9.5" cy="9.5" r="1.2" fill="currentColor"/><circle cx="14.5" cy="14.5" r="1.2" fill="currentColor"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9.5" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  </defs>
+</svg>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="#top">Ganesh <em>Brothers</em></a>
+    <nav class="main" aria-label="Main">
+      <a href="#top" data-nav="top" class="active">Home</a>
+      <a href="#specials" data-nav="specials">Specials</a>
+      <a href="#shop" data-nav="shop">Shop</a>
+      <a href="#recipes" data-nav="recipes">Recipes</a>
+      <a href="#visit" data-nav="visit">Visit Us</a>
+    </nav>
+    <div class="actions">
+      <button class="bag" data-act="open-list" aria-label="Open shopping list"><svg width="28" height="28"><use href="#i-bag"/></svg><span class="count" data-count></span></button>
+      <a class="pill primary sm" href="#visit">Get Directions</a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <svg class="float blur" style="--r:-30deg;top:-10px;right:2%;width:80px;height:96px;animation-delay:-2s"><use href="#leaf"/></svg>
+    <div class="wrap hero-grid">
+      <div>
+        <div class="eyebrow">Indian grocery · Ellicott City, MD</div>
+        <h1>it’s not just Groceries, it’s a Taste of Home.</h1>
+        <p class="lead">Spices, rice, lentils, fresh produce, frozen favorites and festival sweets — all under one roof on Locust Mill St. Plan your trip here, then pick it all up in store.</p>
+        <div class="cta">
+          <a class="pill primary" href="#shop">Shop Groceries</a>
+          <a class="pill" href="#recipes">Plan a Recipe</a>
+        </div>
+        <div class="fresh">
+          <div class="label">Fresh this week</div>
+          <div class="stack" id="freshStack"></div>
+          <div id="openStatus"></div>
+        </div>
+      </div>
+      <div class="hero-art">
+        <img class="thali" src="images/hero-thali.svg" alt="A steel thali with dal, palak paneer, chana, raita, rice, roti and gulab jamun">
+        <a class="deal" href="#specials">
+          <span class="ic"><svg width="22" height="22"><use href="#i-pct"/></svg></span>
+          <b id="dealPct">20%</b>
+          <small><span>Off</span> this week's specials</small>
+        </a>
+        <svg class="float" style="--r:-20deg;top:48%;left:-6%;width:70px;height:84px"><use href="#leaf"/></svg>
+        <svg class="float" style="--r:25deg;bottom:4%;left:12%;width:44px;height:52px;animation-delay:-3s"><use href="#leaf"/></svg>
+        <svg class="float" style="top:26%;right:-7%;width:110px;height:110px;animation-delay:-1.5s"><use href="#tomato"/></svg>
+        <svg class="float" style="--r:-35deg;bottom:-2%;right:4%;width:130px;height:46px;animation-delay:-4s"><use href="#chili"/></svg>
+      </div>
+    </div>
+    <div class="wrap">
+      <div class="facts">
+        <div class="fact"><span class="ic"><svg width="22" height="22"><use href="#i-pin"/></svg></span><div>8000 Locust Mill St<small>Ellicott City, MD 21043</small></div></div>
+        <div class="fact"><span class="ic"><svg width="22" height="22"><use href="#i-phone"/></svg></span><div><a href="tel:+14102032525">(410) 203-2525</a><small>Call to check stock or order ahead</small></div></div>
+        <div class="fact"><span class="ic"><svg width="22" height="22"><use href="#i-clock"/></svg></span><div id="todayHours"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="specials">
+    <svg class="float blur" style="--r:20deg;top:40px;left:-20px;width:96px;height:116px;animation-delay:-5s"><use href="#leaf"/></svg>
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <div class="eyebrow" id="weekLabel"></div>
+          <h2>Fresh arrivals &amp; specials</h2>
+        </div>
+        <div class="tabs" role="tablist">
+          <button role="tab" aria-selected="true" data-tab="sale">Weekly specials</button>
+          <button role="tab" aria-selected="false" data-tab="new">Fresh arrivals</button>
+        </div>
+      </div>
+      <div class="rail-wrap">
+        <button class="arrow prev" data-act="scroll" data-dir="-1" aria-label="Scroll back"><svg width="22" height="22" style="rotate:180deg"><use href="#i-arrow"/></svg></button>
+        <div class="rail" id="specialRow"></div>
+        <button class="arrow next" data-act="scroll" data-dir="1" aria-label="Scroll forward"><svg width="22" height="22"><use href="#i-arrow"/></svg></button>
+      </div>
+    </div>
+  </section>
+
+  <section id="shop">
+    <div class="wrap">
+      <div class="eyebrow">Our aisles</div>
+      <h2>Browse the store</h2>
+      <p class="sub">Search by English or Hindi name — try “jeera”, “dal” or “paneer”. Sold-out items suggest an alternative.</p>
+      <div class="toolbar">
+        <label class="search"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M20 20l-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input id="q" type="search" placeholder="Search groceries…" aria-label="Search groceries"></label>
+        <select id="sort" aria-label="Sort">
+          <option value="feat">Featured</option>
+          <option value="low">Price: low to high</option>
+          <option value="high">Price: high to low</option>
+          <option value="az">Name: A–Z</option>
+        </select>
+        <label class="toggle"><input type="checkbox" id="inStock"> In stock only</label>
+      </div>
+      <div class="chips" id="chips" role="toolbar" aria-label="Categories"></div>
+      <div class="result-meta" id="meta"></div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </section>
+
+  <section id="recipes">
+    <svg class="float" style="--r:-15deg;top:60px;right:3%;width:90px;height:90px;animation-delay:-2.5s"><use href="#tomato"/></svg>
+    <div class="wrap">
+      <div class="eyebrow">Recipe to shopping list</div>
+      <h2>What are you cooking?</h2>
+      <p class="sub">Pick a dish, untick what you already have, and we'll add the rest to your list. Sold-out ingredients are swapped for the best alternative.</p>
+      <div class="grid" id="recipeGrid"></div>
+    </div>
+  </section>
+
+  <section id="visit">
+    <div class="wrap">
+      <div class="eyebrow">Visit us</div>
+      <h2>Hours &amp; directions</h2>
+      <div class="visit-grid" style="margin-top:24px">
+        <div class="panel">
+          <table class="hours" id="hoursTable"></table>
+          <p style="margin:20px 0 0"><b>Ganesh Brothers</b><br>8000 Locust Mill St, Ellicott City, MD 21043<br><a href="tel:+14102032525">(410) 203-2525</a></p>
+          <div class="cta" style="margin-top:20px">
+            <a class="pill primary" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=8000+Locust+Mill+St+Ellicott+City+MD+21043">Get Directions</a>
+            <a class="pill" href="tel:+14102032525">Call Store</a>
+          </div>
+        </div>
+        <iframe class="map" title="Map to Ganesh Brothers" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+          src="https://maps.google.com/maps?q=8000%20Locust%20Mill%20St%2C%20Ellicott%20City%2C%20MD%2021043&z=15&output=embed"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq" style="padding-top:20px">
+    <div class="wrap" style="max-width:820px">
+      <div class="eyebrow">Questions</div>
+      <h2>Frequently asked</h2>
+      <div style="margin-top:22px">
+        <details><summary>Can I order online for delivery?</summary><p>Not yet — this site helps you plan your trip. Build a shopping list here, then print it or keep it on your phone while you shop. For large or catering orders, call us and we'll have it ready.</p></details>
+        <details><summary>How do I know if something is in stock?</summary><p>Every product shows whether it's in stock, running low, or sold out. If an item is sold out, we suggest a close alternative. Stock changes daily, so call ahead if you need something specific.</p></details>
+        <details><summary>When does fresh produce arrive?</summary><p>Fresh vegetables, herbs and fruit arrive several times a week. Check the “Fresh arrivals” tab for what's just come in.</p></details>
+        <details><summary>Do you carry festival and pooja items?</summary><p>Yes — diyas, incense, and festival sweets are stocked ahead of Diwali, Navratri, Pongal and other occasions.</p></details>
+        <details><summary>Is there parking?</summary><p>Yes, free parking is available in the shopping center lot right outside the store.</p></details>
+        <details><summary>Can you special-order a product?</summary><p>Often, yes. Ask at the counter or call (410) 203-2525 and we'll check with our suppliers.</p></details>
+        <details><summary>Will my shopping list be saved?</summary><p>Your list stays saved in this browser on this device. To take it with you, use Print or Share from the list panel.</p></details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div><b style="color:var(--ink)">Ganesh Brothers</b> · 8000 Locust Mill St, Ellicott City, MD 21043 · (410) 203-2525</div>
+    <div>Demo site — prices, stock levels and hours are sample data. Illustrations are original artwork made for this site.</div>
+  </div>
+</footer>
+
+<button class="fab" data-act="open-list" aria-label="Open shopping list"><svg width="20" height="20"><use href="#i-bag"/></svg> My list <span data-count>0</span></button>
+
+<div class="scrim" id="scrim" data-act="close-list"></div>
+<aside class="drawer" id="drawer" aria-label="Shopping list">
+  <div class="dr-head"><h3>My list</h3><span class="n" data-count>0</span><button class="x" data-act="close-list" aria-label="Close">×</button></div>
+  <div class="dr-body">
+    <form class="custom" id="customForm"><input id="customInput" placeholder="Add something else (e.g. yogurt)" aria-label="Add custom item"><button>Add</button></form>
+    <div id="listBody"></div>
+  </div>
+  <div class="dr-foot">
+    <div class="total"><span>Estimated total</span><span id="total">$0.00</span></div>
+    <small>Sample prices; in-store prices may vary. Sorted by aisle.</small>
+    <div class="dr-actions">
+      <button class="primary" data-act="print">Print list</button>
+      <button data-act="share">Share</button>
+      <button data-act="clear">Clear</button>
+    </div>
+  </div>
+</aside>
+
+<dialog id="recipeDlg"></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div id="printArea"></div>
+
+<script>
+/* ---------- data ---------- */
+const CATS = [
+  {id:'all', name:'All', e:'🛒'},
+  {id:'spices', name:'Spices & Masalas', e:'🌶️'},
+  {id:'rice', name:'Rice, Flour & Lentils', e:'🍚'},
+  {id:'produce', name:'Fresh Produce', e:'🥬'},
+  {id:'frozen', name:'Frozen Foods', e:'❄️'},
+  {id:'snacks', name:'Snacks', e:'🥨'},
+  {id:'sweets', name:'Sweets', e:'🍬'},
+  {id:'pantry', name:'Pantry, Oils & Tea', e:'🫙'},
+  {id:'household', name:'Household & Pooja', e:'🪔'},
+];
+// [id, name, cat, price, unit, emoji, opts]  opts: stock ('low'|'out'), alt, was, isNew, k (keywords)
+const RAW = [
+  ['turmeric','Turmeric Powder','spices',3.49,'7 oz','🟡',{k:'haldi'}],
+  ['chili','Kashmiri Chili Powder','spices',4.99,'7 oz','🌶️',{k:'lal mirch red'}],
+  ['cumin','Cumin Seeds','spices',3.99,'7 oz','🟤',{k:'jeera'}],
+  ['mustard','Black Mustard Seeds','spices',2.99,'7 oz','⚫',{k:'rai sarson'}],
+  ['garam','Garam Masala','spices',3.49,'3.5 oz','🧂',{was:4.49}],
+  ['coriander','Coriander Powder','spices',3.29,'7 oz','🟫',{k:'dhaniya'}],
+  ['hing','Asafoetida (Hing)','spices',3.99,'1.75 oz','🫙',{stock:'low'}],
+  ['cardamom','Green Cardamom','spices',8.99,'3.5 oz','💚',{k:'elaichi'}],
+  ['biryani','Biryani Masala – House Blend','spices',3.99,'3.5 oz','🍛',{stock:'out',alt:'biryani2'}],
+  ['biryani2','Biryani Masala – Shahi Blend','spices',4.29,'3.5 oz','🍛',{}],
+  ['chaimasala','Chai Masala','spices',3.49,'3.5 oz','☕',{}],
+  ['curry-dry','Dried Curry Leaves','spices',2.49,'1 oz','🍂',{k:'kadi patta'}],
+
+  ['basmati','Aged Basmati Rice','rice',15.99,'10 lb','🍚',{was:18.99}],
+  ['sona','Sona Masoori Rice','rice',16.99,'10 lb','🍚',{}],
+  ['toor','Toor Dal','rice',6.99,'4 lb','🟠',{stock:'out',alt:'masoor',k:'arhar lentils pigeon pea'}],
+  ['masoor','Masoor Dal (Red Lentils)','rice',5.99,'4 lb','🔴',{k:'lentils'}],
+  ['moong','Moong Dal','rice',6.49,'4 lb','🟢',{k:'lentils mung'}],
+  ['chana','Kabuli Chana (Chickpeas)','rice',5.49,'4 lb','🫘',{k:'garbanzo chole'}],
+  ['atta','Whole Wheat Atta','rice',14.99,'20 lb','🌾',{k:'flour roti chapati'}],
+  ['besan','Besan (Gram Flour)','rice',4.99,'4 lb','🌾',{stock:'low',k:'flour'}],
+
+  ['cilantro','Fresh Cilantro','produce',0.99,'bunch','🌿',{isNew:true,k:'dhaniya coriander'}],
+  ['curry-fresh','Fresh Curry Leaves','produce',1.99,'pack','🍃',{stock:'out',alt:'curry-dry',k:'kadi patta'}],
+  ['methi','Fresh Methi Leaves','produce',1.99,'bunch','🌱',{isNew:true,k:'fenugreek'}],
+  ['okra','Okra','produce',2.99,'lb','🫛',{was:3.49,k:'bhindi'}],
+  ['greenchili','Green Chilies','produce',1.49,'½ lb','🌶️',{k:'hari mirch'}],
+  ['ginger','Ginger','produce',2.49,'lb','🫚',{k:'adrak'}],
+  ['garlic','Garlic','produce',1.99,'3 ct','🧄',{k:'lahsun'}],
+  ['onion','Red Onions','produce',1.29,'lb','🧅',{k:'pyaz'}],
+  ['tomato','Tomatoes','produce',1.99,'lb','🍅',{k:'tamatar'}],
+  ['potato','Potatoes','produce',0.99,'lb','🥔',{k:'aloo'}],
+  ['cauli','Cauliflower','produce',3.49,'each','🥦',{k:'gobi'}],
+  ['spinach','Spinach','produce',2.49,'bunch','🥬',{k:'palak'}],
+  ['mango','Honey Mangoes','produce',1.99,'each','🥭',{isNew:true,k:'aam'}],
+  ['lemon','Lemons','produce',0.50,'each','🍋',{k:'nimbu'}],
+
+  ['paneer','Paneer Block','frozen',5.99,'14 oz','🧀',{stock:'out',alt:'paneer2',k:'cottage cheese'}],
+  ['paneer2','Malai Paneer','frozen',6.49,'14 oz','🧀',{k:'cottage cheese'}],
+  ['parotta','Malabar Parotta','frozen',4.99,'5 ct','🫓',{isNew:true}],
+  ['naan','Garlic Naan','frozen',4.49,'4 ct','🫓',{}],
+  ['samosa','Punjabi Samosas','frozen',5.49,'12 ct','🥟',{was:6.99}],
+  ['peas','Green Peas','frozen',2.99,'2 lb','🟢',{k:'matar'}],
+
+  ['bhujia','Aloo Bhujia','snacks',3.99,'14 oz','🥨',{k:'namkeen'}],
+  ['mixture','Madras Mixture','snacks',3.49,'14 oz','🥜',{stock:'low',k:'namkeen'}],
+  ['murukku','Murukku','snacks',3.99,'7 oz','🌀',{isNew:true,k:'chakli'}],
+  ['bananachips','Kerala Banana Chips','snacks',4.29,'14 oz','🍌',{was:4.99}],
+  ['biscuits','Tea-Time Biscuits','snacks',1.99,'pack','🍪',{}],
+
+  ['gjmix','Gulab Jamun Mix','sweets',3.49,'7 oz','🟤',{}],
+  ['kajukatli','Kaju Katli','sweets',12.99,'1 lb','🔷',{isNew:true,k:'diwali mithai cashew'}],
+  ['soan','Soan Papdi','sweets',4.99,'1 lb','🟨',{was:5.99,k:'mithai diwali'}],
+  ['mangopulp','Alphonso Mango Pulp','sweets',4.49,'30 oz','🥭',{stock:'out',alt:'kesarpulp',k:'aamras lassi'}],
+  ['kesarpulp','Kesar Mango Pulp','sweets',3.99,'30 oz','🥭',{k:'aamras lassi'}],
+  ['jaggery','Jaggery (Gur)','sweets',3.49,'1 lb','🟫',{k:'gud sugar'}],
+
+  ['ghee','Pure Ghee','pantry',11.99,'32 oz','🧈',{}],
+  ['oil','Sunflower Oil','pantry',8.99,'1 gal','🛢️',{}],
+  ['tea','Assam Black Tea','pantry',7.99,'1 lb','🍵',{k:'chai'}],
+  ['pickle','Mango Pickle','pantry',3.99,'10 oz','🫙',{k:'achar'}],
+
+  ['diya','Clay Diyas','household',5.99,'12 ct','🪔',{isNew:true,k:'diwali lamp'}],
+  ['incense','Agarbatti (Incense)','household',2.99,'100 ct','🕯️',{k:'pooja'}],
+  ['tumbler','Steel Tumbler Set','household',9.99,'6 ct','🥛',{}],
+  ['soap','Dishwash Bar','household',1.49,'each','🧼',{}],
+];
+const P = RAW.map(([id,name,cat,price,unit,e,o]) => ({id,name,cat,price,unit,e,stock:o.stock||'in',alt:o.alt,was:o.was,isNew:!!o.isNew,k:o.k||''}));
+const byId = Object.fromEntries(P.map(p=>[p.id,p]));
+const catName = id => (CATS.find(c=>c.id===id)||{}).name;
+
+// ingredient: [productId, qty]  or  [null, name, qty] for things most kitchens already have
+const RECIPES = [
+  {id:'dal',name:'Dal Tadka',e:'🍲',desc:'Everyday yellow dal tempered with ghee, cumin and garlic.',time:'35 min',serves:4,diet:'Vegetarian',
+   ing:[['toor','1 cup'],['onion','1 medium'],['tomato','2'],['garlic','6 cloves'],['ginger','1 inch'],['greenchili','2'],['cumin','1 tsp'],['mustard','½ tsp'],['hing','pinch'],['turmeric','½ tsp'],['chili','1 tsp'],['ghee','2 tbsp'],['curry-fresh','8 leaves'],['cilantro','handful'],[null,'Salt','to taste']],
+   steps:['Pressure-cook dal with turmeric until soft.','Sauté onion, ginger, garlic, chilies and tomato.','Stir into dal and simmer 10 min.','Heat ghee, crackle cumin, mustard, hing and curry leaves; pour over dal.']},
+  {id:'chana',name:'Chana Masala',e:'🫘',desc:'Hearty chickpea curry with a tangy onion-tomato gravy.',time:'45 min',serves:4,diet:'Vegan',
+   ing:[['chana','1½ cups'],['onion','2'],['tomato','3'],['ginger','1 inch'],['garlic','5 cloves'],['greenchili','2'],['cumin','1 tsp'],['coriander','2 tsp'],['garam','1 tsp'],['chili','1 tsp'],['turmeric','½ tsp'],['oil','3 tbsp'],['cilantro','handful'],['lemon','1'],[null,'Salt','to taste']],
+   steps:['Soak chickpeas overnight and pressure-cook.','Cook onion, ginger, garlic until golden; add tomato and spices.','Add chickpeas and simmer 15 min.','Finish with lemon and cilantro.']},
+  {id:'biryani',name:'Vegetable Biryani',e:'🍛',desc:'Fragrant layered basmati with vegetables and whole spices.',time:'1 hr',serves:6,diet:'Vegetarian',
+   ing:[['basmati','2 cups'],['biryani','2 tbsp'],['onion','3'],['tomato','2'],['potato','2'],['peas','1 cup'],['ginger','1 inch'],['garlic','6 cloves'],['greenchili','3'],['cardamom','4 pods'],['ghee','3 tbsp'],['cilantro','handful'],[null,'Yogurt','½ cup'],[null,'Salt','to taste']],
+   steps:['Par-boil rice with cardamom.','Fry onions until deep golden; cook vegetables with masala and yogurt.','Layer rice over vegetables, top with fried onions and ghee.','Cover tightly and steam 20 min.']},
+  {id:'palak',name:'Palak Paneer',e:'🥬',desc:'Silky spinach gravy with soft cubes of paneer.',time:'40 min',serves:4,diet:'Vegetarian',
+   ing:[['spinach','2 bunches'],['paneer','14 oz'],['onion','1'],['tomato','1'],['ginger','1 inch'],['garlic','4 cloves'],['greenchili','2'],['cumin','1 tsp'],['garam','½ tsp'],['ghee','2 tbsp'],[null,'Cream','2 tbsp'],[null,'Salt','to taste']],
+   steps:['Blanch spinach and blend with chilies.','Sauté cumin, onion, ginger, garlic and tomato.','Add spinach purée and simmer.','Fold in paneer and cream; finish with garam masala.']},
+  {id:'aloogobi',name:'Aloo Gobi',e:'🥔',desc:'Dry-style potato and cauliflower with turmeric and cumin.',time:'30 min',serves:4,diet:'Vegan',
+   ing:[['potato','3'],['cauli','1 head'],['onion','1'],['tomato','1'],['ginger','1 inch'],['greenchili','2'],['cumin','1 tsp'],['turmeric','½ tsp'],['coriander','1 tsp'],['oil','3 tbsp'],['cilantro','handful'],[null,'Salt','to taste']],
+   steps:['Crackle cumin in oil; add onion and ginger.','Add potatoes and cauliflower with spices.','Cover and cook on low until tender.','Garnish with cilantro.']},
+  {id:'chai',name:'Masala Chai',e:'☕',desc:'Spiced milk tea — strong, sweet and warming.',time:'10 min',serves:2,diet:'Vegetarian',
+   ing:[['tea','2 tsp'],['chaimasala','½ tsp'],['cardamom','2 pods'],['ginger','½ inch'],['jaggery','to taste'],[null,'Milk','1 cup']],
+   steps:['Boil water with crushed ginger, cardamom and chai masala.','Add tea and simmer 2 min.','Add milk and jaggery; bring to a boil twice.','Strain and serve hot.']},
+  {id:'gj',name:'Gulab Jamun',e:'🟤',desc:'Soft milk dumplings soaked in cardamom syrup.',time:'45 min',serves:6,diet:'Vegetarian',
+   ing:[['gjmix','1 pack'],['cardamom','4 pods'],['ghee','for frying'],[null,'Sugar','2 cups'],[null,'Milk','½ cup']],
+   steps:['Make syrup with sugar, water and cardamom.','Knead mix with milk into smooth balls.','Fry slowly in ghee until deep brown.','Soak in warm syrup at least 1 hour.']},
+  {id:'lassi',name:'Mango Lassi',e:'🥭',desc:'Thick, cooling mango and yogurt drink.',time:'5 min',serves:2,diet:'Vegetarian',
+   ing:[['mangopulp','1 cup'],['cardamom','1 pod'],[null,'Yogurt','1 cup'],[null,'Milk','½ cup']],
+   steps:['Blend everything with a few ice cubes.','Taste and adjust sweetness.','Serve chilled with a pinch of cardamom.']},
+];
+
+// Sample hours, index 0 = Sunday. [open, close] in 24h.
+const HOURS = [[10,20],[10,21],[10,21],[10,21],[10,21],[10,21],[9,21]];
+const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = n => '$' + n.toFixed(2);
+// Illustration from images/<name>.svg (drawn by tools/make-art.js); the emoji behind it shows if the file is missing.
+const photo = (name, alt = '') => `<img class="photo" src="images/${name}.svg" alt="${esc(alt)}" loading="lazy" onerror="this.remove()">`;
+const icon = (id, s = 20) => `<svg width="${s}" height="${s}" aria-hidden="true"><use href="#${id}"/></svg>`;
+const fmtH = h => { const ap = h >= 12 ? 'pm' : 'am'; return ((h % 12) || 12) + ap; };
+const store = {
+  get(){ try { return JSON.parse(localStorage.getItem('gb-list') || '[]'); } catch { return []; } },
+  set(v){ try { localStorage.setItem('gb-list', JSON.stringify(v)); } catch {} }
+};
+let toastT;
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove('on'), 2200); }
+
+/* ---------- shopping list state ---------- */
+let list = store.get(); // [{key,pid,name,qty,done,notes:[]}]
+const entry = pid => list.find(x => x.pid === pid);
+function save(){ store.set(list); renderList(); renderGrid(); renderSpecials(); }
+
+function addProduct(pid, note, qty = 1){
+  const p = byId[pid]; if (!p) return;
+  const ex = entry(pid);
+  if (ex){ if (note){ if (!ex.notes.includes(note)) ex.notes.push(note); } else ex.qty += qty; }
+  else list.push({key:pid, pid, name:p.name, qty, done:false, notes: note ? [note] : []});
+}
+function setQty(key, d){
+  const ex = list.find(x => x.key === key); if (!ex) return;
+  ex.qty += d; if (ex.qty <= 0) list = list.filter(x => x !== ex);
+  save();
+}
+
+/* ---------- open status ---------- */
+function renderStatus(){
+  const now = new Date(), d = now.getDay(), h = now.getHours() + now.getMinutes()/60;
+  const [o,c] = HOURS[d];
+  const open = h >= o && h < c;
+  let next;
+  if (open) next = `closes at ${fmtH(c)}`;
+  else if (h < o) next = `opens today at ${fmtH(o)}`;
+  else next = `opens ${DAYS[(d+1)%7]} at ${fmtH(HOURS[(d+1)%7][0])}`;
+  $('#openStatus').innerHTML = `<span class="status ${open?'open':''}"><span class="dot"></span><b>${open?'Open now':'Closed'}</b> · ${next}</span>`;
+  $('#todayHours').innerHTML = `Today ${fmtH(o)} – ${fmtH(c)}<small>Open 7 days a week</small>`;
+  $('#hoursTable').innerHTML = DAYS.map((n,i)=>`<tr class="${i===d?'today':''}"><td>${n}${i===d?' (today)':''}</td><td>${fmtH(HOURS[i][0])} – ${fmtH(HOURS[i][1])}</td></tr>`).join('');
+}
+
+/* ---------- product card ---------- */
+function card(p){
+  const out = p.stock === 'out', ex = entry(p.id);
+  const tags = [
+    p.was && !out ? '<span class="tag sale">Sale</span>' : '',
+    p.isNew ? '<span class="tag new">New</span>' : '',
+    p.stock === 'low' ? '<span class="tag low">Few left</span>' : '',
+    out ? '<span class="tag out">Sold out</span>' : ''
+  ].join('');
+  const badge = out
+    ? `<span class="cartb off" title="Sold out">${icon('i-cart')}</span>`
+    : `<button class="cartb ${ex?'in':''}" data-act="add" data-id="${p.id}" title="Add to list" aria-label="Add ${esc(p.name)} to list">${ex ? `<b>${ex.qty}</b>` : icon('i-cart')}</button>`;
+  const stepper = ex ? `<div class="stepper"><button data-act="qty" data-key="${p.id}" data-d="-1" aria-label="Fewer">−</button><span>${ex.qty}</span><button data-act="qty" data-key="${p.id}" data-d="1" aria-label="More">+</button></div>` : '';
+  const a = out && byId[p.alt];
+  const alt = a ? `<div class="alt">Try instead:<b>${esc(a.name)} · ${money(a.price)}</b>
+      <button data-act="add" data-id="${a.id}">${entry(a.id) ? '✓ In your list' : '+ Add alternative'}</button></div>` : '';
+  return `<article class="card ${out?'is-out':''}">
+    <div class="plate"><span aria-hidden="true">${p.e}</span>${photo(p.id, p.name)}</div>${badge}
+    <div class="tags">${tags}</div>
+    <h3>${esc(p.name)}</h3>
+    <span class="sub2">${esc(p.unit)} · ${esc(catName(p.cat))}</span>
+    <div class="foot"><span class="price">${money(p.price)}${p.was ? `<s>${money(p.was)}</s>` : ''}</span>${stepper}</div>
+    ${alt}
+  </article>`;
+}
+
+/* ---------- catalog ---------- */
+const state = {cat:'all', q:'', sort:'feat', inStock:false, tab:'sale'};
+function renderChips(){
+  $('#chips').innerHTML = CATS.map(c => `<button class="chip" data-act="cat" data-cat="${c.id}" aria-pressed="${state.cat===c.id}">${c.e} ${esc(c.name)}</button>`).join('');
+}
+function renderGrid(){
+  const q = state.q.trim().toLowerCase();
+  let items = P.filter(p =>
+    (state.cat === 'all' || p.cat === state.cat) &&
+    (!state.inStock || p.stock !== 'out') &&
+    (!q || (p.name + ' ' + p.k + ' ' + catName(p.cat)).toLowerCase().includes(q)));
+  if (state.sort === 'low') items.sort((a,b)=>a.price-b.price);
+  if (state.sort === 'high') items.sort((a,b)=>b.price-a.price);
+  if (state.sort === 'az') items.sort((a,b)=>a.name.localeCompare(b.name));
+  const outN = items.filter(p=>p.stock==='out').length;
+  $('#meta').textContent = `${items.length} item${items.length===1?'':'s'}` + (state.cat!=='all' ? ` in ${catName(state.cat)}` : '') + (outN ? ` · ${outN} sold out (alternatives shown)` : '');
+  $('#grid').innerHTML = items.length ? items.map(card).join('') :
+    `<div class="empty">No matches for “${esc(state.q)}”. Try another name, or <a href="tel:+14102032525">call us</a> — we may be able to order it in.</div>`;
+}
+function renderSpecials(){
+  const items = P.filter(p => state.tab === 'sale' ? (p.was && p.stock!=='out') : p.isNew);
+  $('#specialRow').innerHTML = items.map(card).join('');
+  document.querySelectorAll('[data-tab]').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === state.tab));
+}
+function renderHeroBits(){
+  const now = new Date(), mon = new Date(now); mon.setDate(now.getDate() - ((now.getDay()+6)%7));
+  const sun = new Date(mon); sun.setDate(mon.getDate()+6);
+  const f = d => d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  $('#weekLabel').textContent = `This week · ${f(mon)} – ${f(sun)}`;
+  const best = Math.max(...P.filter(p=>p.was).map(p => (p.was - p.price) / p.was));
+  $('#dealPct').textContent = `Up to ${Math.round(best*100)}%`;
+  const fresh = P.filter(p => p.isNew);
+  $('#freshStack').innerHTML = fresh.slice(0,4).map(p => `<span title="${esc(p.name)}">${photo(p.id, p.name)}</span>`).join('') +
+    (fresh.length > 4 ? `<span class="more">+${fresh.length-4}</span>` : '');
+}
+
+/* ---------- recipes ---------- */
+function recipeOut(r){ return r.ing.filter(([id]) => id && byId[id].stock === 'out').length; }
+function renderRecipes(){
+  $('#recipeGrid').innerHTML = RECIPES.map(r => {
+    const n = recipeOut(r);
+    return `<button class="card recipe" data-act="recipe" data-id="${r.id}">
+      <span class="plate"><span aria-hidden="true">${r.e}</span>${photo('r-' + r.id, r.name)}</span>
+      <span class="tags"><span class="tag diet">${r.diet}</span>${n ? `<span class="tag out">${n} swapped</span>` : ''}</span>
+      <span class="name">${esc(r.name)}</span>
+      <span class="sub2">${esc(r.desc)}</span>
+      <span class="foot"><span class="meta">${r.time} · Serves ${r.serves} · ${r.ing.filter(i=>i[0]).length} items</span><span class="go">${icon('i-arrow',18)}</span></span>
+    </button>`;
+  }).join('');
+}
+function openRecipe(id){
+  const r = RECIPES.find(x => x.id === id), dlg = $('#recipeDlg');
+  const rows = r.ing.map(ing => {
+    if (!ing[0]) return `<label class="ing"><input type="checkbox" disabled><span class="th">🏠</span><div><div class="nm">${esc(ing[1])}</div><div class="q">${esc(ing[2])}</div><div class="home">From your kitchen — add it yourself if you need it</div></div></label>`;
+    const p = byId[ing[0]], out = p.stock === 'out', use = out && p.alt ? byId[p.alt] : p;
+    return `<label class="ing"><input type="checkbox" checked data-pid="${use.id}">
+      <span class="th"><span aria-hidden="true">${use.e}</span>${photo(use.id)}</span>
+      <div><div class="nm">${esc(use.name)}</div><div class="q">${esc(ing[1])}</div>
+      ${out ? `<div class="swap">${esc(p.name)} is sold out — swapped for ${esc(use.name)}</div>` : ''}
+      ${entry(use.id) ? '<div class="q">✓ Already in your list</div>' : ''}</div>
+      <span class="pr">${money(use.price)}</span></label>`;
+  }).join('');
+  dlg.innerHTML = `<div class="dlg-hero"><span aria-hidden="true">${r.e}</span>${photo('r-' + r.id, r.name)}<button class="x" data-act="close-dlg" aria-label="Close">×</button></div>
+    <div class="dlg-head"><h3>${esc(r.name)}</h3><p>${r.time} · Serves ${r.serves} · ${r.diet}</p></div>
+    <div class="dlg-body"><p style="margin:0 0 6px;color:var(--muted)">Untick anything you already have at home.</p>${rows}
+      <h3 style="font-size:1.05rem;margin-top:16px">Method</h3><ol class="steps">${r.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol></div>
+    <div class="dlg-foot"><span id="dlgSum" style="font-weight:600"></span><button class="pill primary" data-act="add-recipe" data-id="${r.id}">Add to my list</button></div>`;
+  const upd = () => {
+    const ch = [...dlg.querySelectorAll('input[data-pid]:checked')];
+    const t = ch.reduce((s,c)=>s+byId[c.dataset.pid].price,0);
+    $('#dlgSum').textContent = `${ch.length} items · ~${money(t)}`;
+  };
+  dlg.onchange = upd; upd();
+  dlg.showModal();
+}
+
+/* ---------- list drawer ---------- */
+function renderList(){
+  const n = list.length;
+  document.querySelectorAll('[data-count]').forEach(b => { b.textContent = n || ''; b.toggleAttribute('data-zero', !n); });
+  const order = CATS.map(c=>c.id).concat(['other']);
+  const groups = {};
+  list.forEach(x => { const g = x.pid ? byId[x.pid].cat : 'other'; (groups[g] = groups[g] || []).push(x); });
+  const body = $('#listBody');
+  if (!n){ body.innerHTML = `<div class="empty" style="margin-top:20px">Your list is empty.<br>Add items from the store or pick a recipe.</div>`; }
+  else body.innerHTML = order.filter(g => groups[g]).map(g => `<div class="dr-group">${g==='other' ? 'Other items' : esc(catName(g))}</div>` + groups[g].map(x => {
+    const p = x.pid && byId[x.pid];
+    const oos = p && p.stock === 'out' && p.alt ? `<div class="oos">Sold out · <button data-act="swap" data-key="${x.key}">Swap for ${esc(byId[p.alt].name)}</button></div>` : '';
+    return `<div class="li ${x.done?'done':''}">
+      <input type="checkbox" ${x.done?'checked':''} data-act="done" data-key="${esc(x.key)}" aria-label="Got it">
+      <span class="e"><span aria-hidden="true">${p ? p.e : '📝'}</span>${p ? photo(p.id) : ''}</span>
+      <div class="t"><div class="n">${esc(x.name)}</div>${p ? `<small>${esc(p.unit)} · ${money(p.price)}</small>` : ''}${x.notes.length ? `<small>For: ${esc(x.notes.join(', '))}</small>` : ''}${oos}</div>
+      <div class="mini"><button data-act="qty" data-key="${esc(x.key)}" data-d="-1" aria-label="Fewer">−</button><span>${x.qty}</span><button data-act="qty" data-key="${esc(x.key)}" data-d="1" aria-label="More">+</button></div>
+      <button class="rm" data-act="rm" data-key="${esc(x.key)}" aria-label="Remove">✕</button></div>`;
+  }).join('')).join('');
+  const total = list.reduce((s,x) => s + (x.pid ? byId[x.pid].price * x.qty : 0), 0);
+  $('#total').textContent = money(total);
+  // printable version
+  $('#printArea').innerHTML = `<h1>Ganesh Brothers — Shopping list</h1><p>8000 Locust Mill St, Ellicott City, MD · (410) 203-2525 · ${new Date().toLocaleDateString()}</p>` +
+    order.filter(g => groups[g]).map(g => `<h3>${g==='other'?'Other items':esc(catName(g))}</h3><ul>` + groups[g].map(x => `<li>☐ ${x.qty} × ${esc(x.name)}${x.pid?` <span style="color:#666">(${esc(byId[x.pid].unit)})</span>`:''}</li>`).join('') + '</ul>').join('') +
+    `<p><b>Estimated total: ${money(total)}</b></p>`;
+}
+function listText(){
+  return 'My Ganesh Brothers shopping list\n' + list.map(x => `${x.done?'✓':'☐'} ${x.qty} × ${x.name}`).join('\n') + `\nEst. ${$('#total').textContent}`;
+}
+function openList(on){ $('#drawer').classList.toggle('on', on); $('#scrim').classList.toggle('on', on); }
+
+/* ---------- events ---------- */
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const {act, id, key} = b.dataset;
+  if (act === 'add'){ addProduct(id); save(); toast(`Added ${byId[id].name}`); }
+  else if (act === 'qty'){ setQty(key, +b.dataset.d); }
+  else if (act === 'rm'){ list = list.filter(x => x.key !== key); save(); }
+  else if (act === 'swap'){
+    const x = list.find(y => y.key === key), alt = byId[byId[x.pid].alt];
+    list = list.filter(y => y !== x); addProduct(alt.id, null, x.qty);
+    const ne = entry(alt.id); x.notes.forEach(n => { if (!ne.notes.includes(n)) ne.notes.push(n); });
+    save(); toast(`Swapped for ${alt.name}`);
+  }
+  else if (act === 'cat'){ state.cat = b.dataset.cat; renderChips(); renderGrid(); }
+  else if (act === 'scroll'){ const r = $('#specialRow'); r.scrollBy({left: +b.dataset.dir * r.clientWidth * .8, behavior:'smooth'}); }
+  else if (act === 'open-list'){ openList(true); }
+  else if (act === 'close-list'){ openList(false); }
+  else if (act === 'recipe'){ openRecipe(id); }
+  else if (act === 'close-dlg'){ $('#recipeDlg').close(); }
+  else if (act === 'add-recipe'){
+    const r = RECIPES.find(x => x.id === id);
+    const picks = [...$('#recipeDlg').querySelectorAll('input[data-pid]:checked')].map(c => c.dataset.pid);
+    if (!picks.length){ toast('Tick at least one ingredient'); return; }
+    picks.forEach(pid => addProduct(pid, r.name));
+    save(); $('#recipeDlg').close(); toast(`Added ${picks.length} items for ${r.name}`); openList(true);
+  }
+  else if (act === 'print'){ if (!list.length) return toast('Your list is empty'); window.print(); }
+  else if (act === 'share'){
+    if (!list.length) return toast('Your list is empty');
+    const text = listText();
+    try {
+      if (navigator.share) await navigator.share({title:'Shopping list', text});
+      else { await navigator.clipboard.writeText(text); toast('List copied — paste it into a text or note'); }
+    } catch (err) { if (err.name !== 'AbortError') toast('Could not share — try Print instead'); }
+  }
+  else if (act === 'clear'){ if (list.length && confirm('Clear your whole shopping list?')){ list = []; save(); } }
+});
+document.addEventListener('change', e => {
+  if (e.target.dataset.act === 'done'){ const x = list.find(y => y.key === e.target.dataset.key); x.done = e.target.checked; save(); }
+});
+document.querySelectorAll('[data-tab]').forEach(b => b.addEventListener('click', () => { state.tab = b.dataset.tab; renderSpecials(); $('#specialRow').scrollLeft = 0; }));
+$('#q').addEventListener('input', e => { state.q = e.target.value; if (state.q && state.cat !== 'all'){ state.cat = 'all'; renderChips(); } renderGrid(); });
+$('#sort').addEventListener('change', e => { state.sort = e.target.value; renderGrid(); });
+$('#inStock').addEventListener('change', e => { state.inStock = e.target.checked; renderGrid(); });
+$('#customForm').addEventListener('submit', e => {
+  e.preventDefault(); const v = $('#customInput').value.trim(); if (!v) return;
+  list.push({key:'c' + Date.now(), pid:null, name:v, qty:1, done:false, notes:[]}); $('#customInput').value = ''; save();
+});
+$('#recipeDlg').addEventListener('click', e => { if (e.target === e.currentTarget) e.currentTarget.close(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') openList(false); });
+
+// Highlight the nav link for the section in view.
+const navLinks = document.querySelectorAll('[data-nav]');
+const navObs = new IntersectionObserver(es => es.forEach(en => {
+  if (!en.isIntersecting) return;
+  const id = en.target.id === 'faq' ? 'visit' : en.target.id;
+  navLinks.forEach(a => a.classList.toggle('active', a.dataset.nav === id));
+}), {rootMargin:'-45% 0px -50% 0px'});
+['top','specials','shop','recipes','visit','faq'].forEach(id => navObs.observe(document.getElementById(id)));
+
+/* ---------- init ---------- */
+renderStatus(); setInterval(renderStatus, 60000);
+renderHeroBits(); renderChips(); renderGrid(); renderSpecials(); renderRecipes(); renderList();
+</script>
+</body>
+</html>
