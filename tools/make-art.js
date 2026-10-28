@@ -647,6 +647,30 @@ function dish(id) {
     s += Array.from({ length: 10 }, () => `<path d="M${f(rand(120, 280))} ${f(rand(176, 214))} q8 -6 16 0" stroke="#D99AB8" stroke-width="3" fill="none" stroke-linecap="round"/>`).join('');
     return frame('#6BA539', zoom(s));
   }
+  if (id === 'rajma') return curryBowl('#8E2A2A', '#8A2E22', '#EFE8DC',
+    ellPts(30, 200, 162, 84, 26).map(([x, y]) => piece('pod', x, y, '#6E1E1A')).join('') + cilantro(5),
+    `<ellipse cx="322" cy="250" rx="52" ry="15" fill="#FBF7EE" stroke="#E3D9C4" stroke-width="2"/>` + ellPts(40, 322, 246, 44, 9).map(([x, y]) => piece('grain', x, y, '#FBF7EE')).join(''));
+  if (id === 'pavbhaji') {
+    let s = plate() + `<ellipse cx="170" cy="196" rx="74" ry="30" fill="#C2401C"/>` +
+      Array.from({ length: 30 }, () => { const [x, y] = ellPts(1, 170, 194, 64, 22)[0]; return `<circle cx="${f(x)}" cy="${f(y)}" r="${f(rand(2, 5))}" fill="${pick(['#D9541E', '#A8321C', '#7CC242', '#E8742A'])}"/>`; }).join('') +
+      `<rect x="150" y="178" width="26" height="16" rx="3" fill="#F7D774"/>` + cilantro(4);
+    [[262, 176], [292, 196], [262, 214]].forEach(([x, y]) => s += `<ellipse cx="${x}" cy="${y}" rx="30" ry="18" fill="#D9A35B" stroke="#B87A3A" stroke-width="2"/><path d="M${x - 22} ${y} Q${x} ${y - 10} ${x + 22} ${y}" stroke="#F2C97A" stroke-width="3" fill="none"/>`);
+    return frame('#C2401C', zoom(s));
+  }
+  if (id === 'lemonrice' || id === 'poha' || id === 'upma') {
+    const base = { lemonrice: '#F2D04A', poha: '#F2DC7A', upma: '#F1E3B8' }[id];
+    let s = plate() + `<ellipse cx="200" cy="194" rx="104" ry="34" fill="${base}"/>`;
+    s += ellPts(id === 'upma' ? 200 : 170, 200, 192, 98, 30).map(([x, y]) => id === 'upma' ? `<circle cx="${f(x)}" cy="${f(y)}" r="1.8" fill="${shade(base, -.12)}"/>` : piece(id === 'poha' ? 'tea' : 'grain', x, y, R() < .8 ? base : shade(base, -.12))).join('');
+    s += ellPts(14, 200, 190, 90, 26).map(([x, y]) => piece('leaf', x, y, '#2E7A34')).join('');
+    s += ellPts(id === 'poha' ? 16 : 10, 200, 190, 90, 26).map(([x, y]) => id === 'lemonrice' ? piece('cashew', x, y, '#EAD3A2') : id === 'poha' ? piece('lentil', x, y, '#B5652A') : piece('pea', x, y, '#7CC242')).join('');
+    s += ellPts(12, 200, 190, 90, 26).map(([x, y]) => piece('round', x, y, '#2A1E16')).join('');
+    if (id !== 'upma') s += `<path d="M288 214 A26 26 0 0 1 340 214 Z" fill="#F5CF2E" stroke="#CFA80F" stroke-width="2"/><path d="M294 212 A20 20 0 0 1 334 212 Z" fill="#FBE58B"/>`;
+    return frame(base, zoom(s));
+  }
+  if (id === 'kheer') return curryBowl('#E8C98A', '#F7EEDB', '#C99A2E',
+    ellPts(60, 200, 162, 84, 26).map(([x, y]) => piece('grain', x, y, '#FFFDF6')).join('') +
+    ellPts(8, 200, 160, 70, 20).map(([x, y]) => piece('almond', x, y, '#B5703A')).join('') + ellPts(8, 200, 160, 70, 20).map(([x, y]) => piece('lentil', x, y, '#C99A2E')).join('') +
+    ellPts(6, 200, 160, 70, 20).map(([x, y]) => piece('pistachio', x, y, '#D9C08A')).join(''));
   return recipeArt(id);
 }
 
@@ -1070,8 +1094,9 @@ function artFor(p) {
   return utensil(n);
 }
 
-const ART = Object.fromEntries(INVENTORY_ITEMS.map(p => [p.id, () => artFor(p)]));
-for (const r of ['sarson', 'sambar', 'avial', 'undhiyu', 'biryani', 'dalmakhani', 'bhindi', 'lassi']) ART['r-' + r] = () => dish(r);
+// Products with a photo (photo: in the inventory) don't need a drawing.
+const ART = Object.fromEntries(INVENTORY_ITEMS.filter(p => !p.photo).map(p => [p.id, () => artFor(p)]));
+for (const r of ['dal', 'chana', 'biryani', 'palak', 'sambar', 'chai', 'aloogobi', 'lassi', 'rajma', 'pavbhaji', 'bhindi', 'lemonrice', 'gj', 'poha', 'upma', 'kheer']) ART['r-' + r] = () => dish(r);
 ART['hero-thali'] = () => heroThali();
 
 fs.mkdirSync(OUT, { recursive: true });

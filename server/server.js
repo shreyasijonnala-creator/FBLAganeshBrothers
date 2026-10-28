@@ -169,9 +169,9 @@ function stats(days) {
 
 /* ---------- demo data (only with --demo) ---------- */
 function seedDemo() {
-  const popular = ['basmati-rice', 'toor-dal', 'red-onion', 'tomato', 'plain-yogurt-dahi', 'whole-milk', 'ginger-root', 'green-chili-pepper', 'laxmi-turmeric-powder',
-    'deep-cumin-seeds', 'suhana-garam-masala', 'minute-khana-punjabi-samosa', 'anand-madras-murukku', 'parle-parle-g-biscuits', 'tata-tea-gold', 'paneer-block',
-    'ghee-clarified-butter', 'masoor-dal-red-split', 'vadilal-green-peas', 'lemon', 'banana', 'mango', 'potato', 'chana-dal', 'whole-wheat-atta', 'deep-kerala-mixture'];
+  const popular = ['tata-sampann-toor-dal', 'india-gate-basmati-rice', 'onion', 'tomato', 'potato', 'green-chili', 'ginger', 'garlic', 'coriander-leaves',
+    'amul-milk', 'amul-masti-dahi', 'amul-ghee', 'mother-dairy-paneer', 'haldirams-aloo-bhujia', 'parle-g-biscuits', 'maggi-2-minute-noodles', 'tata-tea-gold',
+    'everest-turmeric-powder', 'trs-cumin-seeds', 'mdh-garam-masala', 'kabuli-chana', 'banana', 'mango', 'lemon', 'coca-cola', 'aashirvaad-atta', 'okra-bhindi'];
   const all = INVENTORY_ITEMS.filter(p => p.stock !== 'out').map(p => p.id);
   const names = ['Priya S.', 'Rahul M.', 'Anjali K.', 'Vikram P.', 'Meera R.', 'Arjun D.', 'Kavya N.', 'Sanjay T.', 'Divya G.', 'Rohan B.', 'Neha J.', 'Amit V.', 'Lakshmi I.', 'Karthik R.'];
   const rnd = n => Math.floor(Math.random() * n);
