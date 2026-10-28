@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Draws the flat illustrations in images/ (one SVG per product and recipe).
 // Run from anywhere:  node tools/make-art.js
-// To change a picture, edit its line in ART at the bottom and re-run.
+// Product pictures come from data/inventory.js via the rules in artFor() near the bottom; edit and re-run.
 const fs = require('fs'), path = require('path');
 const OUT = path.join(__dirname, '..', 'images');
 
@@ -56,6 +56,22 @@ function piece(kind, x, y, col, rot = rand(0, 180)) {
       const [k, c] = pick([['stick', '#E3A23B'], ['stick', '#D98B2B'], ['round', '#C27C42'], ['lentil', '#8DB04A'], ['leaf', '#4F7F2F'], ['chip', '#E8B04A']]);
       return piece(k, x, y, c, rot);
     }
+    case 'almond': return `<path d="M${x - 9} ${y} C${x - 8} ${y - 9} ${x + 3} ${y - 9} ${x + 10} ${y} C${x + 3} ${y + 7} ${x - 7} ${y + 7} ${x - 9} ${y} Z" fill="${col}" stroke="${d}" stroke-width="1" ${T}/>`;
+    case 'cashew': return `<g ${T}><path d="M${x - 9} ${y + 3} Q${x} ${y - 13} ${x + 9} ${y + 3}" stroke="${d}" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M${x - 9} ${y + 3} Q${x} ${y - 13} ${x + 9} ${y + 3}" stroke="${col}" stroke-width="7" fill="none" stroke-linecap="round"/></g>`;
+    case 'pistachio': return `<g ${T}><ellipse cx="${x}" cy="${y}" rx="10" ry="7" fill="${col}" stroke="${d}" stroke-width="1"/><ellipse cx="${x + 2}" cy="${y - 1}" rx="5" ry="2.2" fill="#8DB04A"/></g>`;
+    case 'walnut': return `<circle cx="${x}" cy="${y}" r="11" fill="${col}" stroke="${d}" stroke-width="1"/><path d="M${x - 7} ${y - 3} q3 -4 6 0 t6 0 M${x - 7} ${y + 4} q3 -4 6 0 t6 0" stroke="${d}" stroke-width="1.2" fill="none"/>`;
+    case 'date': return `<g ${T}><ellipse cx="${x}" cy="${y}" rx="12" ry="5.5" fill="${col}" stroke="${d}" stroke-width="1"/><path d="M${x - 7} ${y - 1} q4 2 8 -1 M${x - 3} ${y + 2} q4 1 8 -1" stroke="${d}" stroke-width="1" fill="none"/></g>`;
+    case 'makhana': return `<circle cx="${x}" cy="${y}" r="9" fill="${col}" stroke="${shade(col, -.15)}" stroke-width="1"/><circle cx="${x - 2}" cy="${y - 3}" r="2" fill="#8A5A3A" opacity=".55"/><circle cx="${x + 3}" cy="${y + 2}" r="1.5" fill="#8A5A3A" opacity=".45"/>`;
+    case 'vegmix': {
+      const [k, c] = pick([['pea', '#7CC242'], ['cube', '#F08A2C'], ['cube', '#F2D46B'], ['stick', '#5E9B3A'], ['pea', '#7CC242'], ['cube', '#F4EEE2']]);
+      return piece(k, x, y, c, rot);
+    }
+    case 'confetti': return piece(pick(['round', 'oval', 'tea', 'lentil']), x, y, pick(['#E24C7A', '#F4EEE2', '#7FBF4A', '#F2C94C', '#D9342B', '#8A5A35']), rot);
+    case 'dust': return `<circle cx="${x}" cy="${y}" r="${f(rand(2, 4.5))}" fill="${R() < .5 ? col : shade(col, R() < .5 ? .2 : -.15)}"/>`;
+    case 'samosa': return `<g ${T}><polygon points="${x - 13},${y + 8} ${x + 13},${y + 8} ${x + 1},${y - 14}" fill="${col}" stroke="${d}" stroke-width="1.5" stroke-linejoin="round"/></g>`;
+    case 'roll': return `<g ${T}><rect x="${x - 18}" y="${y - 7}" width="36" height="14" rx="7" fill="${col}" stroke="${d}" stroke-width="1.2"/><path d="M${x - 8} ${y - 6} q3 6 0 12 M${x + 6} ${y - 6} q3 6 0 12" stroke="${d}" stroke-width="1" fill="none"/></g>`;
+    case 'crystal': return `<polygon points="${x - 7},${y + 5} ${x - 4},${y - 7} ${x + 6},${y - 6} ${x + 8},${y + 4} ${x + 1},${y + 8}" fill="${col}" stroke="${d}" stroke-width="1" ${T}/><polygon points="${x - 4},${y - 5} ${x + 4},${y - 4} ${x},${y + 1}" fill="#fff" opacity=".7" ${T}/>`;
+    case 'disc': return `<ellipse cx="${x}" cy="${y}" rx="15" ry="11" fill="${col}" stroke="${d}" stroke-width="1.2"/><ellipse cx="${x - 3}" cy="${y - 2}" rx="4" ry="2" fill="${d}" opacity=".35"/>`;
   }
   return '';
 }
@@ -114,11 +130,11 @@ function powderBowl(col, o = {}) {
 }
 function seedBowl(col, kind, o = {}) {
   const bc = BOWLS[o.bowl || 'wood'], id = UID + 'm';
-  const n = { chickpea: 75, pod: 70, leaf: 90, lentil: 190, grain: 220 }[kind] || 260;
-  const pts = domePts(n).map(([x, y]) => piece(kind, x, y, R() < .25 ? shade(col, .12) : col)).join('');
+  const n = { chickpea: 75, pod: 70, leaf: 90, lentil: 190, grain: 220, crystal: 110, confetti: 220, almond: 90, cashew: 80, pistachio: 80, walnut: 45, date: 50, makhana: 55, ball: 45, disc: 60, chip: 60, cube: 90, stick: 120 }[kind] || 260;
+  const pts = domePts(n).map(([x, y]) => piece(kind, x, y, kind === 'confetti' ? '' : R() < .25 ? shade(col, .12) : col)).join('');
   return frame(o.bg || col, bowlBack(bc) +
     `<clipPath id="${id}"><path d="${DOME}"/></clipPath><path d="${DOME}" fill="${shade(col, -0.25)}"/>` +
-    `<g clip-path="url(#${id})">${pts}</g>` + bowlFront(bc) + (o.whole ? wholeSpices() : tableScatter(kind, col)));
+    `<g clip-path="url(#${id})">${pts}</g>` + bowlFront(bc) + (o.whole ? wholeSpices() : tableScatter(kind === 'confetti' ? 'round' : kind, kind === 'confetti' ? '#E24C7A' : col)));
 }
 
 /* ---------- sacks of rice and flour ---------- */
@@ -145,20 +161,32 @@ function sack(fill, label, labelCol, kind) {
 }
 
 /* ---------- packets, cans, jars, bottles ---------- */
+// Splits a label into at most two lines and sizes it to fit the packet.
+function labelText(label, x, y, max = 200, col = '#fff') {
+  const words = label.split(' '), lines = [''];
+  for (const w of words) {
+    const cur = lines[lines.length - 1];
+    if (cur && (cur + ' ' + w).length > 13 && lines.length < 2) lines.push(w);
+    else lines[lines.length - 1] = cur ? cur + ' ' + w : w;
+  }
+  const fs = Math.min(22, max / Math.max(...lines.map(l => l.length)) * 1.7);
+  const y0 = lines.length === 1 ? y : y - fs * .55;
+  return lines.map((l, i) => `<text x="${x}" y="${f(y0 + i * fs * 1.1)}" font-size="${f(fs)}" fill="${col}" ${FONT}>${l.toUpperCase().replace(/&/g, '&amp;').replace(/</g, '&lt;')}</text>`).join('');
+}
 function packet(col, label, kind, fillCol) {
   const id = UID + 'w', fs = Math.min(22, 230 / label.length);
   const zig = y => `<path d="M118 ${y} ${Array.from({ length: 21 }, (_, i) => `L${118 + i * 8.2} ${y + (i % 2 ? 6 : 0)}`).join(' ')}" stroke="${shade(col, -0.35)}" stroke-width="1.5" fill="none"/>`;
-  const n = { biscuit: 26, chip: 40, spiral: 30, ball: 30, cube: 45, pea: 120 }[kind] || 140;
+  const n = { biscuit: 26, chip: 40, spiral: 30, ball: 30, cube: 45, pea: 120, samosa: 34, roll: 30, disc: 34, chickpea: 60, leaf: 70, pod: 50, dust: 500 }[kind] || 140;
   return frame(col,
     `<path d="M118 66 L282 66 L292 252 L108 252 Z" fill="${col}"/>` +
     `<rect x="114" y="56" width="172" height="20" rx="3" fill="${shade(col, -0.22)}"/>${zig(70)}` +
     `<rect x="104" y="244" width="192" height="18" rx="3" fill="${shade(col, -0.22)}"/>` +
     `<path d="M128 78 L140 78 L132 240 L120 240 Z" fill="#fff" opacity=".18"/>` +
-    `<path d="M118 126 Q200 112 286 126 L287 140 Q200 126 117 140 Z" fill="${shade(col, 0.3)}" opacity=".7"/>` +
-    `<text x="200" y="${108}" font-size="${f(fs)}" fill="#fff" ${FONT}>${label}</text>` +
+    `<path d="M118 128 Q200 116 286 128 L287 138 Q200 126 117 138 Z" fill="${shade(col, 0.3)}" opacity=".7"/>` +
+    labelText(label, 200, 106, 150) +
     `<clipPath id="${id}"><ellipse cx="200" cy="186" rx="64" ry="46"/></clipPath>` +
     `<ellipse cx="200" cy="186" rx="64" ry="46" fill="#FFF6E6"/>` +
-    `<g clip-path="url(#${id})">${ellPts(n, 200, 186, 70, 52).map(([x, y]) => piece(kind, x, y, kind === 'mix' ? '' : (R() < .3 ? shade(fillCol, .12) : fillCol))).join('')}</g>` +
+    `<g clip-path="url(#${id})">${kind === 'dust' ? `<rect x="130" y="130" width="140" height="110" fill="${fillCol}"/>` : ''}${ellPts(n, 200, 186, 70, 52).map(([x, y]) => piece(kind, x, y, /mix|confetti/.test(kind) ? '' : (R() < .3 ? shade(fillCol, .12) : fillCol))).join('')}</g>` +
     `<ellipse cx="200" cy="186" rx="64" ry="46" fill="none" stroke="#fff" stroke-width="5"/>`);
 }
 function mangoShape(x, y, s, col = '#F2B630') {
@@ -185,7 +213,7 @@ function can(col, label) {
 function jar(contentCol, lidCol, label, o = {}) {
   const id = UID + 'j';
   const chunks = o.chunks ? Array.from({ length: 30 }, () =>
-    `<rect x="${f(rand(140, 250))}" y="${f(rand(104, 244))}" width="${f(rand(10, 20))}" height="${f(rand(8, 14))}" rx="4" fill="${pick(['#E9B44C', '#D46A2A', '#A8321C', '#F0C766'])}" transform="rotate(${f(rand(0, 90))} 200 180)" opacity=".9"/>`).join('') : '';
+    `<rect x="${f(rand(140, 250))}" y="${f(rand(104, 244))}" width="${f(rand(10, 20))}" height="${f(rand(8, 14))}" rx="4" fill="${pick(Array.isArray(o.chunks) ? o.chunks : ['#E9B44C', '#D46A2A', '#A8321C', '#F0C766'])}" transform="rotate(${f(rand(0, 90))} 200 180)" opacity=".9"/>`).join('') : '';
   const inner = `<clipPath id="${id}"><rect x="138" y="98" width="124" height="156" rx="24"/></clipPath>` +
     `<rect x="138" y="98" width="124" height="156" rx="24" fill="${contentCol}"/>` +
     `<g clip-path="url(#${id})">${chunks}<rect x="138" y="98" width="124" height="14" fill="${shade(contentCol, .3)}" opacity=".6"/></g>` +
@@ -194,7 +222,7 @@ function jar(contentCol, lidCol, label, o = {}) {
     `<rect x="146" y="72" width="108" height="32" rx="6" fill="${lidCol}"/>` +
     Array.from({ length: 12 }, (_, i) => `<path d="M${154 + i * 8} 76 V100" stroke="${shade(lidCol, -.25)}" stroke-width="2"/>`).join('') +
     `<rect x="152" y="150" width="96" height="56" rx="7" fill="#FFF8EC" stroke="${lidCol}" stroke-width="2"/>` +
-    `<text x="200" y="${185}" font-size="${Math.min(22, 200 / label.length)}" fill="${lidCol}" ${FONT}>${label}</text>`;
+    labelText(label, 200, 184, 100, lidCol);
   return frame(o.bg || contentCol, o.small ? G('translate(200 258) scale(.82) translate(-200 -258)', inner) + (o.extra || '') : inner + (o.extra || ''));
 }
 function bottle() {
@@ -322,8 +350,7 @@ function garlic() {
   return frame('#D8CBB5', bulb(160, 186, 1.15) + bulb(256, 200, .9) +
     `<path d="M300 252 C290 228 316 214 330 222 C322 234 318 246 300 252 Z" fill="#F4EEE2" stroke="#CDBFA8" stroke-width="2"/>`);
 }
-function onions() {
-  const c = '#8E2A5A';
+function onions(c = '#8E2A5A') {
   const on = (x, y, s) => G(`translate(${x} ${y}) scale(${s})`,
     `<path d="M0 -72 C6 -56 62 -46 62 5 C62 46 30 60 0 60 C-30 60 -62 46 -62 5 C-62 -46 -6 -56 0 -72 Z" fill="${c}" stroke="${shade(c, -.3)}" stroke-width="2.5"/>` +
     [-34, -14, 14, 34].map(x => `<path d="M0 -62 Q${x * 1.4} 0 ${x * .5} 58" stroke="${shade(c, .25)}" stroke-width="2" fill="none"/>`).join('') +
@@ -339,8 +366,7 @@ function tomatoes() {
     `<path d="M${x} ${y - r + 6} q2 -10 8 -12" stroke="#3E8E2F" stroke-width="3" fill="none"/>`;
   return frame('#E0342C', t(200, 146, 46) + t(150, 200, 50) + t(254, 202, 52));
 }
-function potatoes() {
-  const c = '#C8955A';
+function potatoes(c = '#C8955A') {
   const p = (x, y, rx, ry, r) => G(`rotate(${r} ${x} ${y})`, `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${c}" stroke="#94673A" stroke-width="2.5"/>` +
     Array.from({ length: 5 }, () => `<path d="M${f(x + rand(-rx * .6, rx * .6))} ${f(y + rand(-ry * .5, ry * .5))} q3 -3 6 0" stroke="#8A5E33" stroke-width="2" fill="none"/>`).join('') +
     Array.from({ length: 10 }, () => `<circle cx="${f(x + rand(-rx * .7, rx * .7))}" cy="${f(y + rand(-ry * .6, ry * .6))}" r="1.3" fill="#A67845"/>`).join(''));
@@ -365,8 +391,7 @@ function okra() {
     `<rect x="-14" y="-8" width="16" height="16" rx="4" fill="#4E7F2A"/><path d="M-14 0 h-10" stroke="#4E7F2A" stroke-width="5" stroke-linecap="round"/>`);
   return frame(c, pod(110, 118, 8) + pod(96, 152, 2) + pod(118, 186, -4) + pod(104, 222, 4));
 }
-function lemons() {
-  const c = '#F5CF2E';
+function lemons(c = '#F5CF2E') {
   const l = (x, y, s, r) => G(`translate(${x} ${y}) rotate(${r}) scale(${s})`,
     `<path d="M-64 0 C-56 -42 56 -42 64 0 C56 42 -56 42 -64 0 Z" fill="${c}" stroke="#CFA80F" stroke-width="2.5"/><circle cx="-66" cy="0" r="5" fill="${c}" stroke="#CFA80F" stroke-width="2"/><circle cx="66" cy="0" r="5" fill="${c}" stroke="#CFA80F" stroke-width="2"/>` +
     `<path d="M-30 -22 Q0 -32 26 -24" stroke="#fff" stroke-width="5" opacity=".4" fill="none" stroke-linecap="round"/>`);
@@ -375,30 +400,30 @@ function lemons() {
     `<circle cx="282" cy="206" r="5" fill="#F2D24A"/>`;
   return frame(c, l(150, 170, 1, -12) + l(176, 222, .85, 8) + half);
 }
-function mangoes() { return frame('#F2B630', mangoShape(150, 186, 1, '#F4C13A') + mangoShape(262, 196, .9, '#F2B630')); }
+function mangoes(a = '#F4C13A', b = '#F2B630') { return frame(b, mangoShape(150, 186, 1, a) + mangoShape(262, 196, .9, b)); }
 
 /* ---------- household & pooja ---------- */
-function diyas() {
+function diyas(clay = '#C2582B') {
   const d = (x, y, s) => G(`translate(${x} ${y}) scale(${s})`,
     `<circle cx="56" cy="-42" r="28" fill="#FFD36B" opacity=".35"/>` +
-    `<path d="M-50 -6 C-46 24 44 24 50 -6 C30 -14 -30 -14 -50 -6 Z" fill="#C2582B" stroke="#8E3A18" stroke-width="2"/>` +
-    `<ellipse cx="0" cy="-7" rx="40" ry="7" fill="#7A3416"/><path d="M40 -10 L64 -18 L50 2 Z" fill="#C2582B" stroke="#8E3A18" stroke-width="2"/>` +
+    `<path d="M-50 -6 C-46 24 44 24 50 -6 C30 -14 -30 -14 -50 -6 Z" fill="${clay}" stroke="#8E3A18" stroke-width="2"/>` +
+    `<ellipse cx="0" cy="-7" rx="40" ry="7" fill="#7A3416"/><path d="M40 -10 L64 -18 L50 2 Z" fill="${clay}" stroke="#8E3A18" stroke-width="2"/>` +
     [-30, -15, 0, 15, 30].map(x => `<circle cx="${x}" cy="6" r="3" fill="#F2C14E"/>`).join('') +
     `<path d="M57 -16 V-24" stroke="#3a2410" stroke-width="2.5"/>` +
     `<path d="M57 -66 C68 -48 66 -30 57 -24 C48 -30 46 -48 57 -66 Z" fill="#FFA41B"/><path d="M57 -52 C61 -44 60 -34 57 -32 C54 -34 53 -44 57 -52 Z" fill="#FFF3B0"/>`);
   return frame('#E07B1F', d(186, 168, 1) + d(116, 228, .95) + d(250, 232, .95));
 }
-function incense() {
+function incense(col = '#B23A5A') {
   const stick = (x1, y1, x2, y2) => {
     const sx = f(x2 - (x2 - x1) * .78), sy = f(y2 - (y2 - y1) * .78);
     return `<line x1="${x1}" y1="${y1}" x2="${sx}" y2="${sy}" stroke="#D2A86A" stroke-width="3"/><line x1="${sx}" y1="${sy}" x2="${x2}" y2="${y2}" stroke="#6B3B2A" stroke-width="5" stroke-linecap="round"/>` +
       `<circle cx="${x2}" cy="${y2}" r="4" fill="#FF7A1A"/><circle cx="${x2}" cy="${y2}" r="9" fill="#FF7A1A" opacity=".25"/>` +
       `<path d="M${x2} ${y2 - 6} c-14 -16 14 -26 0 -42 c-12 -14 10 -22 2 -36" stroke="#8F969E" stroke-width="3" fill="none" opacity=".55" stroke-linecap="round"/>`;
   };
-  return frame('#B23A5A',
+  return frame(col,
     G('rotate(-6 200 236)', `<rect x="72" y="228" width="256" height="14" rx="7" fill="#8B5A2B"/><path d="M80 235 H320" stroke="#A8743E" stroke-width="2"/>`) +
     stick(112, 232, 200, 104) + stick(118, 232, 252, 116) + stick(108, 232, 158, 96) +
-    G('rotate(4 260 268)', [0, 6, 12, 18, 24].map(o => `<line x1="200" y1="${262 + o / 3}" x2="330" y2="${262 + o / 3}" stroke="${o % 12 ? '#B23A5A' : '#8A2A45'}" stroke-width="3" stroke-linecap="round"/>`).join('')));
+    G('rotate(4 260 268)', [0, 6, 12, 18, 24].map(o => `<line x1="200" y1="${262 + o / 3}" x2="330" y2="${262 + o / 3}" stroke="${o % 12 ? col : shade(col, -.3)}" stroke-width="3" stroke-linecap="round"/>`).join('')));
 }
 function tumblers() {
   const t = (x, y, s) => G(`translate(${x} ${y}) scale(${s})`,
@@ -533,79 +558,524 @@ function heroThali() {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600">${s}</svg>`;
 }
 
-/* ---------- what each product looks like ---------- */
-const ART = {
-  turmeric: () => powderBowl('#E8A317'),
-  chili: () => powderBowl('#C9341F', { bowl: 'steel' }),
-  cumin: () => seedBowl('#8C6A3C', 'oval'),
-  mustard: () => seedBowl('#3B2A22', 'round', { bowl: 'brass', bg: '#8C6A3C' }),
-  garam: () => powderBowl('#7A4A26', { whole: true }),
-  coriander: () => powderBowl('#A98A55', { bowl: 'clay' }),
-  hing: () => jar('#F2D46B', '#D03A2C', 'HING', { small: true }),
-  cardamom: () => seedBowl('#7FA650', 'pod', { bowl: 'brass' }),
-  biryani: () => powderBowl('#B5562A', { whole: true, bowl: 'clay' }),
-  biryani2: () => powderBowl('#9C3D1E', { whole: true, bowl: 'steel' }),
-  chaimasala: () => powderBowl('#8A5A35', { whole: true, bowl: 'white' }),
-  'curry-dry': () => seedBowl('#6F7A33', 'leaf', { bowl: 'clay' }),
-  basmati: () => sack('#FBF7EE', 'BASMATI', '#1F6B4A', 'grain'),
-  sona: () => sack('#FBF7EE', 'SONA MASOORI', '#B3261E', 'grain'),
-  toor: () => seedBowl('#E3A93A', 'lentil', { bowl: 'steel' }),
-  masoor: () => seedBowl('#E8743B', 'lentil', { bowl: 'white' }),
-  moong: () => seedBowl('#D9C64A', 'lentil', { bowl: 'clay' }),
-  chana: () => seedBowl('#E2BE7E', 'chickpea'),
-  atta: () => sack('#F3E7CF', 'ATTA', '#8A5A00', 'powder'),
-  besan: () => powderBowl('#EBC65A', { bowl: 'steel' }),
-  cilantro: () => bunch('cilantro', '#3F8F3A'),
-  'curry-fresh': () => bunch('curry', '#2E7A34'),
-  methi: () => bunch('methi', '#4E9A3E'),
-  okra: () => okra(),
-  greenchili: () => chilis('#3E8E2F'),
-  ginger: () => ginger(),
-  garlic: () => garlic(),
-  onion: () => onions(),
-  tomato: () => tomatoes(),
-  potato: () => potatoes(),
-  cauli: () => cauliflower(),
-  spinach: () => bunch('spinach', '#2F7D3B'),
-  mango: () => mangoes(),
-  lemon: () => lemons(),
-  paneer: () => paneerBoard(),
-  paneer2: () => packet('#2D6CB5', 'MALAI PANEER', 'cube', '#F7F3E8'),
-  parotta: () => sweetsPlate('parotta'),
-  naan: () => sweetsPlate('naan'),
-  samosa: () => sweetsPlate('samosa'),
-  peas: () => packet('#2E8B57', 'GREEN PEAS', 'pea', '#7CC242'),
-  bhujia: () => packet('#D9442E', 'ALOO BHUJIA', 'stick', '#E0A03A'),
-  mixture: () => packet('#7A3FA0', 'MIXTURE', 'mix', ''),
-  murukku: () => packet('#E07B1F', 'MURUKKU', 'spiral', '#C98F3E'),
-  bananachips: () => packet('#2F8F4E', 'BANANA CHIPS', 'chip', '#F2C94C'),
-  biscuits: () => packet('#C0392B', 'TEA BISCUITS', 'biscuit', '#D9A35B'),
-  gjmix: () => packet('#8E2C48', 'GULAB JAMUN', 'ball', '#7B3A1C'),
-  kajukatli: () => sweetsPlate('katli'),
-  soan: () => sweetsPlate('soan'),
-  mangopulp: () => can('#F2A516', 'ALPHONSO'),
-  kesarpulp: () => can('#E2602A', 'KESAR'),
-  jaggery: () => sweetsPlate('jaggery'),
-  ghee: () => jar('#F3C64B', '#C8102E', 'GHEE'),
-  oil: () => bottle(),
-  tea: () => seedBowl('#3A2418', 'tea', { bowl: 'white', bg: '#7A5A3A' }),
-  pickle: () => jar('#C2401C', '#2E7A34', 'ACHAR', { chunks: true }),
-  diya: () => diyas(),
-  incense: () => incense(),
-  tumbler: () => tumblers(),
-  soap: () => soap(),
-  'r-dal': () => recipeArt('dal'),
-  'r-chana': () => recipeArt('chana'),
-  'r-biryani': () => recipeArt('biryani'),
-  'r-palak': () => recipeArt('palak'),
-  'r-aloogobi': () => recipeArt('aloogobi'),
-  'r-chai': () => recipeArt('chai'),
-  'r-gj': () => recipeArt('gj'),
-  'r-lassi': () => recipeArt('lassi'),
-  'hero-thali': () => heroThali(),
-};
+/* ---------- juice bottles ---------- */
+function juiceBottle(col, label) {
+  const body = 'M178 62 L222 62 L222 92 C252 104 262 124 262 150 L262 242 Q262 256 248 256 L152 256 Q138 256 138 242 L138 150 C138 124 148 104 178 92 Z';
+  return frame(col,
+    `<path d="${body}" fill="${col}" stroke="${shade(col, -.35)}" stroke-width="3"/>` +
+    `<path d="M150 158 V238" stroke="#fff" stroke-width="8" stroke-linecap="round" opacity=".3"/>` +
+    `<rect x="176" y="44" width="48" height="22" rx="4" fill="${shade(col, -.4)}"/>` +
+    `<rect x="146" y="150" width="108" height="66" rx="8" fill="#FFF8EC"/>` + labelText(label, 200, 186, 90, shade(col, -.3)));
+}
+
+/* ---------- kitchenware ---------- */
+const STEEL = '#BCC4CE', STEEL_D = '#8F98A3';
+const handle = (x1, y1, x2, y2, col = STEEL, w = 13) =>
+  `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${shade(col, -.3)}" stroke-width="${w + 4}" stroke-linecap="round"/>` +
+  `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>` +
+  `<line x1="${x1}" y1="${y1 - w * .2}" x2="${x2}" y2="${y2 - w * .2}" stroke="#fff" stroke-width="${w * .25}" stroke-linecap="round" opacity=".5"/>`;
+function mesh(cx, cy, r, step = 8) {
+  const id = UID + 'h' + cx;
+  let g = '';
+  for (let v = -r; v <= r; v += step) g += `<path d="M${cx + v} ${cy - r} V${cy + r} M${cx - r} ${cy + v} H${cx + r}" stroke="${STEEL_D}" stroke-width="1" opacity=".7"/>`;
+  return `<clipPath id="${id}"><circle cx="${cx}" cy="${cy}" r="${r}"/></clipPath><circle cx="${cx}" cy="${cy}" r="${r}" fill="#DCE1E6"/><g clip-path="url(#${id})">${g}</g>` +
+    `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${STEEL_D}" stroke-width="5"/>`;
+}
+function utensil(n) {
+  let s;
+  if (/tea strainer/.test(n)) s = handle(210, 150, 330, 90) + mesh(165, 170, 46, 6) + `<circle cx="112" cy="196" r="8" fill="none" stroke="${STEEL_D}" stroke-width="5"/>`;
+  else if (/wire skimmer/.test(n)) {
+    s = handle(222, 140, 350, 62, '#C9A15A', 15);
+    for (let r = 14; r <= 70; r += 12) s += `<circle cx="160" cy="180" r="${r}" fill="none" stroke="${STEEL_D}" stroke-width="2.5"/>`;
+    for (let a = 0; a < 360; a += 30) s += `<line x1="160" y1="180" x2="${f(160 + 72 * Math.cos(a * Math.PI / 180))}" y2="${f(180 + 72 * Math.sin(a * Math.PI / 180))}" stroke="${STEEL_D}" stroke-width="2"/>`;
+  } else if (/strainer/.test(n)) s = handle(220, 170, 360, 250) + mesh(150, 140, 74) + `<path d="M80 110 l-16 -10" stroke="${STEEL_D}" stroke-width="8" stroke-linecap="round"/>`;
+  else if (/ladle/.test(n)) s = handle(180, 150, 340, 54) + `<circle cx="340" cy="54" r="6" fill="${shade(STEEL, .5)}"/>` +
+    `<circle cx="140" cy="186" r="60" fill="${STEEL}" stroke="${STEEL_D}" stroke-width="3"/><circle cx="140" cy="186" r="48" fill="${STEEL_D}"/><path d="M104 168 A40 40 0 0 1 140 146" stroke="#fff" stroke-width="5" fill="none" opacity=".6" stroke-linecap="round"/>`;
+  else if (/slotted/.test(n)) s = handle(180, 150, 340, 56) + G('rotate(-35 140 192)', `<ellipse cx="140" cy="192" rx="64" ry="42" fill="${STEEL}" stroke="${STEEL_D}" stroke-width="3"/>` +
+    [-30, -10, 10, 30].map(x => `<rect x="${140 + x - 4}" y="170" width="8" height="44" rx="4" fill="${STEEL_D}"/>`).join(''));
+  else if (/skimmer/.test(n)) {
+    s = handle(200, 150, 345, 60) + `<circle cx="146" cy="188" r="64" fill="${STEEL}" stroke="${STEEL_D}" stroke-width="3"/>`;
+    for (let x = -48; x <= 48; x += 14) for (let y = -48; y <= 48; y += 14) if (x * x + y * y < 52 * 52) s += `<circle cx="${146 + x}" cy="${188 + y}" r="3.5" fill="${STEEL_D}"/>`;
+  } else if (/spatula/.test(n)) s = handle(110, 250, 230, 140, '#C08A55', 16) +
+    G('rotate(-42 270 104)', `<rect x="236" y="80" width="80" height="48" rx="16" fill="#C08A55" stroke="#8E5E30" stroke-width="3"/><path d="M246 92 H306 M246 104 H306 M246 116 H306" stroke="#A8743E" stroke-width="1.5"/>`);
+  else if (/saucepan/.test(n)) s = handle(286, 150, 372, 118, '#2E2B29', 16) +
+    `<path d="M112 132 L112 228 Q112 246 130 246 L270 246 Q288 246 288 228 L288 132 Z" fill="${STEEL}" stroke="${STEEL_D}" stroke-width="3"/>` +
+    `<ellipse cx="200" cy="132" rx="88" ry="16" fill="#DCE1E6" stroke="${STEEL_D}" stroke-width="3"/><ellipse cx="200" cy="133" rx="76" ry="10" fill="${STEEL_D}"/>` +
+    `<path d="M130 150 V230" stroke="#fff" stroke-width="10" opacity=".45" stroke-linecap="round"/>`;
+  else if (/frying pan/.test(n)) s = handle(246, 232, 372, 282, '#2E2B29', 18) +
+    `<circle cx="168" cy="150" r="104" fill="${STEEL}"/><circle cx="168" cy="150" r="96" fill="#2E2B29"/><circle cx="168" cy="150" r="84" fill="#3A3634"/>` +
+    `<path d="M108 108 A74 74 0 0 1 168 76" stroke="#fff" stroke-width="6" fill="none" opacity=".25" stroke-linecap="round"/>`;
+  else if (/mixing bowl/.test(n)) s = `<ellipse cx="200" cy="166" rx="100" ry="11" fill="${STEEL_D}"/>` + bowlFront(STEEL);
+  else if (/tongs/.test(n)) s = `<path d="M70 250 L320 70" stroke="${STEEL_D}" stroke-width="16" stroke-linecap="round"/><path d="M70 250 L320 70" stroke="${STEEL}" stroke-width="11" stroke-linecap="round"/>` +
+    `<path d="M70 250 L338 98" stroke="${STEEL_D}" stroke-width="16" stroke-linecap="round"/><path d="M70 250 L338 98" stroke="${STEEL}" stroke-width="11" stroke-linecap="round"/>` +
+    `<circle cx="70" cy="250" r="16" fill="none" stroke="${STEEL_D}" stroke-width="6"/>` +
+    `<path d="M312 62 q10 4 14 14 M330 92 q10 4 14 14" stroke="${STEEL_D}" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+  else s = handle(100, 240, 220, 156, '#E07B1F', 26) +
+    `<path d="M226 152 L330 80" stroke="${STEEL_D}" stroke-width="22" stroke-linecap="round"/><path d="M226 152 L330 80" stroke="${STEEL}" stroke-width="17" stroke-linecap="round"/>` +
+    `<path d="M248 136 L316 90" stroke="${STEEL_D}" stroke-width="4" stroke-linecap="round"/>`;
+  return frame('#8FA3B8', s);
+}
+
+/* ---------- recipe dishes for the current recipes ---------- */
+function dish(id) {
+  const sticks = (n, cols, len = 22) => ellPts(n, 200, 162, 84, 26).map(([x, y]) =>
+    `<rect x="${f(x - len / 2)}" y="${f(y - 4)}" width="${len}" height="8" rx="4" fill="${pick(cols)}" transform="rotate(${f(rand(-50, 50))} ${f(x)} ${f(y)})"/>`).join('');
+  const leaves = (n, col = '#2E7A34') => ellPts(n, 200, 162, 80, 24).map(([x, y]) => piece('leaf', x, y, col)).join('');
+  const butter = (x, y) => `<rect x="${x - 14}" y="${y - 12}" width="28" height="22" rx="4" fill="#F7D774" stroke="#D9B44A" stroke-width="1.5"/><rect x="${x - 10}" y="${y - 9}" width="12" height="6" rx="2" fill="#fff" opacity=".6"/>`;
+  const cream = `<path d="M166 160 c10 -12 44 -12 54 0 c-10 10 -38 10 -44 0 c6 -6 24 -6 30 0" stroke="#FFF8EC" stroke-width="4.5" fill="none" stroke-linecap="round"/>`;
+  if (id === 'sarson') return curryBowl('#4E7A2A', '#4F7A2B', '#B8693A', butter(204, 150) +
+    ellPts(10, 200, 162, 80, 24).map(([x, y]) => `<rect x="${f(x)}" y="${f(y)}" width="10" height="3" rx="1.5" fill="#E8C27A"/>`).join(''),
+    `<ellipse cx="326" cy="250" rx="48" ry="14" fill="#E8B54A" stroke="#C98F2A" stroke-width="2"/>` + Array.from({ length: 6 }, () => `<circle cx="${f(rand(296, 356))}" cy="${f(rand(244, 256))}" r="2.5" fill="#B87A2A"/>`).join(''));
+  if (id === 'sambar') return curryBowl('#C2622E', '#B8562A', '#BCC4CE', sticks(9, ['#6B8F3A', '#7FA650'], 30) +
+    ellPts(12, 200, 162, 84, 26).map(([x, y]) => piece('cube', x, y, pick(['#E07B3A', '#F2D46B']))).join('') +
+    ellPts(20, 200, 162, 84, 26).map(([x, y]) => piece('round', x, y, '#2A1E16')).join('') + leaves(6));
+  if (id === 'avial') return curryBowl('#C9B48A', '#F1E7CE', '#B8603A', sticks(26, ['#F08A2C', '#5E9B3A', '#F2D46B', '#7FA650', '#EADFC4']) +
+    Array.from({ length: 16 }, () => `<rect x="${f(rand(130, 270))}" y="${f(rand(140, 184))}" width="8" height="3" fill="#fff"/>`).join('') + leaves(6));
+  if (id === 'dalmakhani') return curryBowl('#7A2E1E', '#6E2A1A', '#EFE8DC',
+    ellPts(40, 200, 162, 84, 26).map(([x, y]) => piece('lentil', x, y, '#3A1A12')).join('') + cream + butter(232, 156) + cilantro(5));
+  if (id === 'undhiyu') {
+    let s = plate();
+    s += ellPts(46, 200, 194, 104, 30).map(([x, y], i) => [
+      piece('cube', x, y, '#7B4A8C'), piece('pod', x, y, '#5E9B3A'), `<circle cx="${f(x)}" cy="${f(y)}" r="9" fill="#9C6A2E" stroke="#6E4A1E"/>`,
+      `<circle cx="${f(x)}" cy="${f(y)}" r="9" fill="#E3C27A" stroke="#B8955A"/>`, piece('oval', x, y, '#5B2A6E')][i % 5]).join('');
+    s += Array.from({ length: 30 }, () => `<circle cx="${f(rand(110, 290))}" cy="${f(rand(176, 218))}" r="2" fill="${pick(['#3F8F3A', '#fff'])}"/>`).join('');
+    return frame('#7B9B4A', zoom(s));
+  }
+  if (id === 'bhindi') {
+    let s = plate();
+    s += ellPts(30, 200, 194, 100, 28).map(([x, y]) => piece('pod', x, y, pick(['#5E9B3A', '#6BA539', '#4E7F2A']))).join('');
+    s += Array.from({ length: 10 }, () => `<path d="M${f(rand(120, 280))} ${f(rand(176, 214))} q8 -6 16 0" stroke="#D99AB8" stroke-width="3" fill="none" stroke-linecap="round"/>`).join('');
+    return frame('#6BA539', zoom(s));
+  }
+  return recipeArt(id);
+}
+
+/* ---------- fresh produce & fruit ---------- */
+const PILE3 = [[200, 150, .9, -8], [148, 204, 1, 6], [256, 206, 1, -10]];
+const pile = (bg, one) => frame(bg, PILE3.map(([x, y, s, r]) => G(`translate(${x} ${y}) rotate(${r}) scale(${s})`, one())).join(''));
+function roundFruit(col, o = {}) {
+  return pile(col, () =>
+    `<circle r="${o.r || 46}" fill="${col}" stroke="${shade(col, -.3)}" stroke-width="2"/>` +
+    (o.blush ? `<circle cx="-12" cy="10" r="30" fill="${o.blush}" opacity=".45"/>` : '') +
+    (o.dimple ? Array.from({ length: 16 }, () => `<circle cx="${f(rand(-32, 32))}" cy="${f(rand(-32, 32))}" r="1.3" fill="${shade(col, -.2)}"/>`).join('') : '') +
+    (o.crease ? `<path d="M0 -44 Q-12 0 0 44" stroke="${shade(col, -.25)}" stroke-width="2.5" fill="none"/>` : '') +
+    `<ellipse cx="-16" cy="-18" rx="12" ry="7" fill="#fff" opacity=".35" transform="rotate(-35 -16 -18)"/>` +
+    (o.crown ? `<path d="M-12 -42 l3 -14 l6 8 l3 -10 l3 10 l6 -8 l3 14 Z" fill="${shade(col, -.35)}"/>`
+      : `<path d="M0 -44 q2 -10 6 -14" stroke="#6B4423" stroke-width="4" fill="none" stroke-linecap="round"/>` +
+        (o.leaf === false ? '' : `<path d="M6 -54 C20 -66 38 -62 42 -54 C30 -46 16 -46 6 -54 Z" fill="#3F8F3A"/>`)));
+}
+function bananas(col) {
+  const one = r => G(`rotate(${r} 200 160)`, `<path d="M104 138 C116 238 252 258 312 176 C276 206 160 214 128 140 Z" fill="${col}" stroke="${shade(col, -.3)}" stroke-width="2"/><path d="M308 178 l12 -6" stroke="#5B3A1E" stroke-width="7" stroke-linecap="round"/>`);
+  return frame(col, one(-14) + one(-2) + one(10) + `<rect x="98" y="134" width="20" height="18" rx="4" fill="#6B4A1E"/>`);
+}
+function pineapple() {
+  const id = UID + 'p';
+  let s = `<clipPath id="${id}"><ellipse cx="200" cy="196" rx="62" ry="78"/></clipPath><ellipse cx="200" cy="196" rx="62" ry="78" fill="#E8A92E" stroke="#B87A1E" stroke-width="3"/><g clip-path="url(#${id})">`;
+  for (let k = -8; k <= 8; k++) s += `<path d="M${130 + k * 18} 110 L${290 + k * 18} 290 M${270 - k * 18} 110 L${110 - k * 18} 290" stroke="#B87A1E" stroke-width="2"/>`;
+  s += `</g>` + [-40, -22, -8, 8, 22, 40].map((a, i) => `<path d="M200 124 Q${200 + a} ${80 - (i % 2) * 16} ${200 + a * 1.6} ${46 + Math.abs(a)}" stroke="#3F8F3A" stroke-width="12" fill="none" stroke-linecap="round"/>`).join('');
+  return frame('#E8A92E', s);
+}
+function melon(flesh, rind, seeds) {
+  if (seeds) return frame(flesh, `<path d="M90 120 A120 120 0 0 0 310 120 Z" fill="${flesh}" transform="translate(0 40)"/><path d="M84 160 A126 126 0 0 0 316 160" stroke="${rind}" stroke-width="16" fill="none"/>` +
+    Array.from({ length: 14 }, () => `<ellipse cx="${f(rand(130, 270))}" cy="${f(rand(172, 220))}" rx="3" ry="5" fill="#2A1E16"/>`).join(''));
+  return frame(rind, `<circle cx="160" cy="180" r="76" fill="${rind}" stroke="${shade(rind, -.3)}" stroke-width="3"/>` +
+    `<path d="M210 120 A80 80 0 0 1 296 230 L210 230 Z" fill="${shade(rind, -.1)}"/><ellipse cx="262" cy="200" rx="58" ry="58" fill="${flesh}" stroke="${shade(rind, -.2)}" stroke-width="6"/><ellipse cx="262" cy="200" rx="26" ry="26" fill="${shade(flesh, -.15)}"/>`);
+}
+function grapes(col) {
+  let s = `<path d="M200 70 q10 -20 30 -24" stroke="#6B4423" stroke-width="5" fill="none"/><path d="M206 66 C230 40 270 46 280 60 C258 74 230 76 206 66 Z" fill="#3F8F3A"/>`;
+  const rows = [[5, 90], [5, 122], [4, 154], [3, 186], [2, 218], [1, 248]];
+  rows.forEach(([n, y]) => { for (let i = 0; i < n; i++) { const x = 200 + (i - (n - 1) / 2) * 30; s += `<circle cx="${x}" cy="${y}" r="17" fill="${col}" stroke="${shade(col, -.3)}" stroke-width="1.5"/><circle cx="${x - 5}" cy="${y - 5}" r="4" fill="#fff" opacity=".4"/>`; } });
+  return frame(col, s);
+}
+function pears(col) {
+  return pile(col, () => `<path d="M0 -50 C14 -50 16 -22 24 -6 C40 22 30 52 0 52 C-30 52 -40 22 -24 -6 C-16 -22 -14 -50 0 -50 Z" fill="${col}" stroke="${shade(col, -.3)}" stroke-width="2"/><ellipse cx="-10" cy="12" rx="8" ry="14" fill="#fff" opacity=".3"/><path d="M0 -50 q2 -10 6 -14" stroke="#6B4423" stroke-width="4" fill="none"/>`);
+}
+function papaya() {
+  return frame('#F28C38', `<ellipse cx="160" cy="180" rx="70" ry="98" fill="#7FA650" stroke="#5E8F3A" stroke-width="3" transform="rotate(-20 160 180)"/>` +
+    `<ellipse cx="256" cy="196" rx="60" ry="88" fill="#F28C38" stroke="#E8B04A" stroke-width="8" transform="rotate(14 256 196)"/>` +
+    Array.from({ length: 22 }, () => `<circle cx="${f(rand(244, 268))}" cy="${f(rand(160, 232))}" r="4" fill="#2A1E16"/>`).join(''));
+}
+function peppers(col) {
+  return pile(col, () => `<path d="M-40 -30 C-52 10 -42 50 -12 52 C-2 46 8 46 18 52 C46 46 54 10 42 -30 C30 -44 -30 -44 -40 -30 Z" fill="${col}" stroke="${shade(col, -.3)}" stroke-width="2"/>` +
+    `<path d="M-6 -40 C-10 0 -8 30 -10 48 M14 -40 C18 0 16 30 18 48" stroke="${shade(col, -.15)}" stroke-width="2" fill="none"/><ellipse cx="-22" cy="-6" rx="7" ry="16" fill="#fff" opacity=".3"/>` +
+    `<path d="M0 -40 q2 -16 12 -20" stroke="#2F6E2A" stroke-width="8" fill="none" stroke-linecap="round"/>`);
+}
+function eggplants(col, small) {
+  return pile(col, () => G(small ? 'scale(.8)' : 'rotate(30)', `<path d="M0 -40 C28 -40 44 -6 44 24 C44 52 22 66 0 66 C-22 66 -44 52 -44 24 C-44 -6 -28 -40 0 -40 Z" fill="${col}" stroke="${shade(col, -.35)}" stroke-width="2"/>` +
+    `<ellipse cx="-18" cy="14" rx="8" ry="20" fill="#fff" opacity=".25"/><path d="M-24 -34 Q0 -20 24 -34 Q16 -48 0 -50 Q-16 -48 -24 -34 Z" fill="#3F7A2C"/><path d="M0 -50 v-16" stroke="#3F7A2C" stroke-width="7" stroke-linecap="round"/>`));
+}
+function gourds(col, bumpy) {
+  const one = (y, r) => G(`translate(200 ${y}) rotate(${r})`, `<path d="M-130 0 C-120 -30 ${bumpy ? 100 : 60} -34 130 -${bumpy ? 4 : 30} C140 ${bumpy ? 20 : -2} ${bumpy ? 100 : 120} 34 -120 18 C-136 14 -136 6 -130 0 Z" fill="${col}" stroke="${shade(col, -.3)}" stroke-width="2"/>` +
+    (bumpy ? Array.from({ length: 40 }, () => `<ellipse cx="${f(rand(-110, 110))}" cy="${f(rand(-14, 16))}" rx="5" ry="3" fill="${shade(col, .2)}"/>`).join('') : `<path d="M-100 -10 Q0 -26 100 -24" stroke="#fff" stroke-width="7" opacity=".3" fill="none" stroke-linecap="round"/>`) +
+    `<path d="M-130 0 h-14" stroke="#5E8F3A" stroke-width="6" stroke-linecap="round"/>`);
+  return frame(col, one(140, -6) + one(206, 4));
+}
+
+/* ---------- dairy ---------- */
+function carton(col, label) {
+  return frame(col, `<polygon points="150,96 200,62 250,96" fill="#F4F4F2" stroke="#C9CCD1" stroke-width="2"/><rect x="190" y="52" width="20" height="14" fill="#E6E8EB"/>` +
+    `<rect x="150" y="96" width="100" height="160" fill="#FBFBFA" stroke="#C9CCD1" stroke-width="2"/><rect x="150" y="150" width="100" height="70" fill="${col}"/>` +
+    labelText(label, 200, 186, 90) + `<rect x="236" y="96" width="14" height="160" fill="#000" opacity=".06"/>`);
+}
+function tub(col, label) {
+  return frame(col, `<path d="M128 120 L272 120 L258 252 Q200 262 142 252 Z" fill="#FBFBFA" stroke="#C9CCD1" stroke-width="2"/>` +
+    `<path d="M134 168 L266 168 L261 222 L139 222 Z" fill="${col}"/>` + labelText(label, 200, 196, 100) +
+    `<ellipse cx="200" cy="120" rx="76" ry="14" fill="${shade(col, .15)}" stroke="${shade(col, -.2)}" stroke-width="2"/><ellipse cx="200" cy="116" rx="62" ry="9" fill="${shade(col, .35)}"/>`);
+}
+function butterBlock() {
+  return frame('#F2D774', `<polygon points="110,168 160,134 300,134 250,168" fill="#FBE79A"/><polygon points="250,168 300,134 300,198 250,232" fill="#E8C95A"/><rect x="110" y="168" width="140" height="64" fill="#F7DD7A"/>` +
+    `<polygon points="190,168 240,134 300,134 300,198 250,232 190,232" fill="#D9DCE1" opacity=".9"/><path d="M196 176 L240 146" stroke="#fff" stroke-width="3" opacity=".7"/>`);
+}
+function eggsBox(col) {
+  let s = `<path d="M90 190 L310 190 L298 246 L102 246 Z" fill="#C9BFAE" stroke="#A89C88" stroke-width="2"/>`;
+  [[125, 172], [175, 168], [225, 168], [275, 172], [150, 194], [200, 192], [250, 194]].forEach(([x, y]) => s += `<ellipse cx="${x}" cy="${y}" rx="24" ry="30" fill="${col}" stroke="${shade(col, -.2)}" stroke-width="1.5"/><ellipse cx="${x - 7}" cy="${y - 10}" rx="5" ry="8" fill="#fff" opacity=".45"/>`);
+  return frame('#C9BFAE', s + `<path d="M90 210 L310 210" stroke="#A89C88" stroke-width="2"/>`);
+}
+function cheeseSlices() {
+  let s = '';
+  for (let i = 0; i < 5; i++) s += `<polygon points="${120 + i * 4},${200 - i * 10} ${200 + i * 4},${150 - i * 10} ${300 + i * 4},${170 - i * 10} ${220 + i * 4},${220 - i * 10}" fill="${i % 2 ? '#F2C94C' : '#F4D35E'}" stroke="#D9A520" stroke-width="1.5"/>`;
+  return frame('#F2C94C', s);
+}
+function whiteBlock(col, bg, ball) {
+  if (ball) return frame(bg, `<ellipse cx="200" cy="232" rx="120" ry="22" fill="#C9935C"/><circle cx="190" cy="176" r="56" fill="${col}" stroke="${shade(col, -.15)}" stroke-width="2"/><ellipse cx="172" cy="156" rx="16" ry="10" fill="#fff" opacity=".7"/><circle cx="270" cy="210" r="22" fill="${col}" stroke="${shade(col, -.15)}" stroke-width="2"/>`);
+  return frame(bg, plate() + cube(190, 196, 70, col) + cube(272, 212, 28, col));
+}
+
+/* ---------- sweets ---------- */
+function sweets2(kind, col) {
+  let s = plate();
+  if (kind === 'balls') [[150, 196], [200, 186], [250, 196], [176, 214], [226, 214]].forEach(([x, y]) => s += `<circle cx="${x}" cy="${y}" r="24" fill="${col}" stroke="${shade(col, -.25)}" stroke-width="1.5"/>` +
+    Array.from({ length: 14 }, () => `<circle cx="${f(x + rand(-16, 16))}" cy="${f(y + rand(-16, 16))}" r="2" fill="${shade(col, -.2)}"/>`).join('') + `<circle cx="${x - 8}" cy="${y - 9}" r="5" fill="#fff" opacity=".35"/>`);
+  if (kind === 'barfi') [[150, 192], [208, 186], [262, 196], [178, 222], [236, 224]].forEach(([x, y]) => s += cube(x, y, 40, col, { nuts: true }));
+  if (kind === 'layered') [[150, 192], [208, 186], [262, 196], [178, 222], [236, 224]].forEach(([x, y]) => s += cube(x, y, 40, col) + `<rect x="${x - 20}" y="${y - 20}" width="40" height="14" fill="#F4EEDC"/>`);
+  if (kind === 'disc') [[150, 196], [205, 186], [258, 196], [178, 216], [232, 216]].forEach(([x, y]) => s += `<ellipse cx="${x}" cy="${y}" rx="26" ry="16" fill="${col}" stroke="${shade(col, -.25)}" stroke-width="1.5"/><ellipse cx="${x}" cy="${y - 2}" rx="9" ry="5" fill="${shade(col, -.15)}"/><circle cx="${x}" cy="${y - 3}" r="2.5" fill="#7DAA3C"/>`);
+  if (kind === 'spiral') [[160, 196], [240, 196], [200, 214]].forEach(([x, y]) => s += `<path d="M${x} ${y} m-6 0 a6 4 0 1 1 12 0 a12 8 0 1 1 -24 0 a18 12 0 1 1 36 0 a24 16 0 1 1 -48 0" stroke="${shade(col, -.25)}" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M${x} ${y} m-6 0 a6 4 0 1 1 12 0 a12 8 0 1 1 -24 0 a18 12 0 1 1 36 0 a24 16 0 1 1 -48 0" stroke="${col}" stroke-width="7" fill="none" stroke-linecap="round"/>`);
+  return frame(col, zoom(s));
+}
+const syrupBowl = (bg, syrup, ballCol, flat) => curryBowl(bg, syrup, '#EFE8DC',
+  [[160, 158], [204, 150], [244, 162], [196, 176]].map(([x, y]) => flat
+    ? `<ellipse cx="${x}" cy="${y}" rx="24" ry="14" fill="${ballCol}" stroke="${shade(ballCol, -.15)}"/>`
+    : `<circle cx="${x}" cy="${y}" r="22" fill="${ballCol}" stroke="${shade(ballCol, -.15)}"/><circle cx="${x - 7}" cy="${y - 8}" r="6" fill="#fff" opacity=".5"/>`).join('') +
+  Array.from({ length: 10 }, () => piece('tea', rand(140, 260), rand(140, 180), '#7DAA3C')).join(''));
+
+/* ---------- puja & household ---------- */
+function cones() {
+  let s = `<ellipse cx="200" cy="236" rx="120" ry="20" fill="#C99A2E"/>`;
+  [[150, 220], [200, 212], [250, 222]].forEach(([x, y]) => s += `<polygon points="${x - 18},${y} ${x + 18},${y} ${x},${y - 44}" fill="#6B3B2A"/><circle cx="${x}" cy="${y - 44}" r="4" fill="#FF7A1A"/><path d="M${x} ${y - 50} c-12 -14 12 -22 0 -36 c-10 -12 8 -20 2 -32" stroke="#8F969E" stroke-width="3" fill="none" opacity=".55"/>`);
+  return frame('#8A5A3A', s);
+}
+function bell() {
+  return frame('#C99A2E', `<rect x="192" y="40" width="16" height="70" rx="6" fill="#B8862E"/><circle cx="200" cy="40" r="14" fill="#C99A2E" stroke="#8E6420" stroke-width="2"/>` +
+    `<path d="M200 106 C150 106 140 160 132 216 L268 216 C260 160 250 106 200 106 Z" fill="#D9AE3E" stroke="#8E6420" stroke-width="3"/><rect x="122" y="214" width="156" height="16" rx="8" fill="#B8862E"/>` +
+    `<circle cx="200" cy="240" r="10" fill="#8E6420"/><path d="M170 130 C160 160 156 190 154 210" stroke="#fff" stroke-width="7" opacity=".35" fill="none" stroke-linecap="round"/>`);
+}
+function pujaThali() {
+  let s = `<ellipse cx="200" cy="196" rx="150" ry="58" fill="#D9AE3E" stroke="#8E6420" stroke-width="3"/><ellipse cx="200" cy="192" rx="124" ry="44" fill="#E6C25A"/>`;
+  s += `<ellipse cx="140" cy="190" rx="22" ry="10" fill="#C8102E"/><ellipse cx="190" cy="206" rx="20" ry="9" fill="#E8A317"/><ellipse cx="250" cy="208" rx="24" ry="9" fill="#F7F1E3"/>`;
+  [[110, 206], [124, 222], [270, 178], [286, 194]].forEach(([x, y]) => s += `<circle cx="${x}" cy="${y}" r="11" fill="#F2A516"/><circle cx="${x}" cy="${y}" r="5" fill="#E8742A"/>`);
+  s += G('translate(214 178) scale(.6)', `<circle cx="56" cy="-42" r="28" fill="#FFD36B" opacity=".4"/><path d="M-50 -6 C-46 24 44 24 50 -6 C30 -14 -30 -14 -50 -6 Z" fill="#C99A2E" stroke="#8E6420" stroke-width="2"/><path d="M57 -66 C68 -48 66 -30 57 -24 C48 -30 46 -48 57 -66 Z" fill="#FFA41B"/>`);
+  return frame('#C99A2E', s);
+}
+function pot(col, kalash) {
+  return frame(col, `<path d="M160 108 L240 108 L232 128 C290 150 296 230 236 252 L164 252 C104 230 110 150 168 128 Z" fill="${col}" stroke="${shade(col, -.35)}" stroke-width="3"/>` +
+    `<ellipse cx="200" cy="108" rx="44" ry="10" fill="${shade(col, .2)}" stroke="${shade(col, -.35)}" stroke-width="2"/><path d="M146 160 C140 190 146 220 160 236" stroke="#fff" stroke-width="8" opacity=".35" fill="none" stroke-linecap="round"/>` +
+    `<path d="M140 186 H260" stroke="${shade(col, -.25)}" stroke-width="3"/>` +
+    (kalash ? [-50, -25, 0, 25, 50].map(a => `<path d="M200 104 Q${200 + a} 70 ${200 + a * 1.5} 60" stroke="#3F8F3A" stroke-width="10" fill="none" stroke-linecap="round"/>`).join('') +
+      `<ellipse cx="200" cy="84" rx="26" ry="30" fill="#8A5A2E"/><path d="M190 60 q10 -14 20 0" stroke="#5B3A1E" stroke-width="5" fill="none"/>` : ''));
+}
+function matchbox() {
+  let s = '';
+  [[150, 200, -8], [230, 190, 6], [190, 160, -2]].forEach(([x, y, r]) => s += G(`rotate(${r} ${x} ${y})`, `<rect x="${x - 50}" y="${y - 30}" width="100" height="60" rx="4" fill="#C8102E" stroke="#8E0A20" stroke-width="2"/><rect x="${x - 34}" y="${y - 18}" width="68" height="36" rx="3" fill="#F2C94C"/><circle cx="${x}" cy="${y}" r="9" fill="#E8742A"/><rect x="${x - 50}" y="${y + 22}" width="100" height="8" fill="#6B3B2A"/>`));
+  return frame('#C8102E', s);
+}
+function garland() {
+  let s = '';
+  for (let t = 0; t <= 1.0001; t += 1 / 26) {
+    const x = 70 + t * 260, y = 90 + Math.sin(t * Math.PI) * 140;
+    s += `<circle cx="${f(x)}" cy="${f(y)}" r="13" fill="${Math.round(t * 26) % 3 ? '#F2A516' : '#E8622A'}"/><circle cx="${f(x)}" cy="${f(y)}" r="5" fill="${shade('#E8622A', -.1)}"/>`;
+  }
+  return frame('#F2A516', s + `<path d="M200 230 v30" stroke="#3F8F3A" stroke-width="4"/><circle cx="200" cy="264" r="8" fill="#C8102E"/>`);
+}
+function framedPicture() {
+  let s = `<rect x="122" y="54" width="156" height="196" rx="6" fill="#C99A2E" stroke="#8E6420" stroke-width="3"/><rect x="138" y="70" width="124" height="164" fill="#F6E7C1"/>`;
+  for (let a = 0; a < 360; a += 20) s += `<line x1="200" y1="150" x2="${f(200 + 60 * Math.cos(a * Math.PI / 180))}" y2="${f(150 + 60 * Math.sin(a * Math.PI / 180))}" stroke="#F2C94C" stroke-width="3"/>`;
+  s += `<circle cx="200" cy="150" r="26" fill="#F2A516"/>` + [-50, -25, 0, 25, 50].map(a => `<path d="M200 214 Q${200 + a} ${178} ${200 + a * .6} ${196}" fill="#E8749A" stroke="#C2185B" stroke-width="1.5"/>`).join('');
+  return frame('#C99A2E', s);
+}
+function rangoli() {
+  let s = '';
+  [[140, 186, '#C8102E'], [200, 176, '#F2A516'], [260, 186, '#2E8B57'], [170, 222, '#7A3FA0'], [230, 222, '#1E6FB8']].forEach(([x, y, c]) => s += `<path d="M${x - 34} ${y + 14} C${x - 26} ${y - 22} ${x + 26} ${y - 22} ${x + 34} ${y + 14} Z" fill="${c}"/>` +
+    Array.from({ length: 12 }, () => `<circle cx="${f(x + rand(-24, 24))}" cy="${f(y + rand(-6, 12))}" r="1.4" fill="${shade(c, .3)}"/>`).join(''));
+  return frame('#E24C7A', s);
+}
+function scraper() {
+  return frame('#8A5A3A', `<rect x="90" y="200" width="220" height="30" rx="6" fill="#C08A55" stroke="#8E5E30" stroke-width="2"/>` +
+    `<path d="M250 200 L250 120 Q252 96 276 92" stroke="${STEEL_D}" stroke-width="10" fill="none" stroke-linecap="round"/><circle cx="280" cy="90" r="18" fill="${STEEL}" stroke="${STEEL_D}" stroke-width="2"/>` +
+    Array.from({ length: 8 }, (_, i) => `<path d="M${280 + 18 * Math.cos(i * .8)} ${90 + 18 * Math.sin(i * .8)} l${f(5 * Math.cos(i * .8))} ${f(5 * Math.sin(i * .8))}" stroke="${STEEL_D}" stroke-width="3"/>`).join('') +
+    `<path d="M120 196 C130 150 200 140 220 190" fill="#8A5A2E"/><path d="M128 194 C138 160 196 154 212 192" fill="#F7F3E8"/>`);
+}
+function rollingPin() {
+  return frame('#C08A55', `<ellipse cx="200" cy="214" rx="130" ry="40" fill="#D9B07A" stroke="#A8743E" stroke-width="3"/><ellipse cx="200" cy="206" rx="112" ry="30" fill="#E3BE88"/>` +
+    G('rotate(-18 200 150)', `<rect x="90" y="138" width="220" height="30" rx="15" fill="#C08A55" stroke="#8E5E30" stroke-width="2"/><rect x="50" y="146" width="44" height="14" rx="7" fill="#8E5E30"/><rect x="306" y="146" width="44" height="14" rx="7" fill="#8E5E30"/><path d="M100 146 H300" stroke="#fff" stroke-width="4" opacity=".3"/>`));
+}
+
+/* ---------- new aisles: which drawing each product gets ---------- */
+const BRAND_COL = { 'Tata Tea': '#B8202E', Tetley: '#1F4E9C', Lipton: '#C98A00', 'Brooke Bond': '#C8102E', 'Wagh Bakri': '#7A1F2B', 'PG Tips': '#2E7D32', 'Tea India': '#E07B1F',
+  Nescafé: '#8E2C2C', Bru: '#5B2A1A', Britannia: '#C8102E', Parle: '#C98A00', Sunfeast: '#5B2A86', 'McVitie’s': '#B8202E', Oreo: '#1F4E9C' };
+const ruled = (n, rules, dflt) => firstMatch(n, rules) || dflt;
+function artForNew(p, n) {
+  const shortLabel = n.replace(/\b(rice|flour|atta)\b/gi, '').trim() || n;
+  switch (p.cat) {
+    case 'fresh-veg': {
+      if (/cherry tomato/.test(n)) return roundFruit('#E0342C', { r: 30, leaf: false });
+      if (/tomato/.test(n)) return tomatoes();
+      if (/shallot/.test(n)) return onions('#B5627A');
+      if (/yellow onion/.test(n)) return onions('#C98A3E');
+      if (/white onion/.test(n)) return onions('#E6DCC8');
+      if (/onion/.test(n)) return onions();
+      if (/sweet potato/.test(n)) return potatoes('#B5503A');
+      if (/red potato/.test(n)) return potatoes('#B5623E');
+      if (/yam/.test(n)) return potatoes('#7A5A4A');
+      if (/potato/.test(n)) return potatoes();
+      if (/ginger/.test(n)) return ginger();
+      if (/garlic/.test(n)) return garlic();
+      if (/jalape/.test(n)) return chilis('#2F7D32');
+      if (/chili|serrano/.test(n)) return chilis('#3E8E2F');
+      if (/bell pepper/.test(n)) return peppers(/red/.test(n) ? '#D9342B' : /yellow/.test(n) ? '#F2C230' : '#3E8E2F');
+      if (/indian eggplant/.test(n)) return eggplants('#6B2A6E', true);
+      if (/eggplant/.test(n)) return eggplants('#4B1E5A');
+      if (/okra/.test(n)) return okra();
+      if (/bitter/.test(n)) return gourds('#4E8F2E', true);
+      return gourds('#9CBF5A', false);
+    }
+    case 'fresh-fruit': {
+      if (/pineapple/.test(n)) return pineapple();
+      if (/plantain/.test(n)) return bananas('#E8C23A');
+      if (/banana/.test(n)) return bananas('#F4D035');
+      if (/gala/.test(n)) return roundFruit('#D9342B', { blush: '#F2C230' });
+      if (/apple/.test(n)) return roundFruit('#E0503A', { blush: '#F4D35E', dimple: true });
+      if (/mandarin|clementine/.test(n)) return roundFruit('#F28C1E', { r: 38, dimple: true });
+      if (/orange/.test(n)) return roundFruit('#F28C1E', { dimple: true });
+      if (/lemon/.test(n)) return lemons();
+      if (/lime/.test(n)) return lemons('#8DC63F');
+      if (/green mango/.test(n)) return mangoes('#8DBF4A', '#7FAF3A');
+      if (/mango/.test(n)) return mangoes();
+      if (/guava/.test(n)) return roundFruit('#B9D36A', { dimple: true });
+      if (/papaya/.test(n)) return papaya();
+      if (/pomegranate/.test(n)) return roundFruit('#C0263A', { crown: true });
+      if (/pineapple/.test(n)) return pineapple();
+      if (/watermelon/.test(n)) return melon('#F0505A', '#3F8F3A', true);
+      if (/cantaloupe/.test(n)) return melon('#F5A04A', '#C9B07A');
+      if (/honeydew/.test(n)) return melon('#C9E08A', '#E3E8B8');
+      if (/grapes/.test(n)) return grapes(/red/.test(n) ? '#8E2A5A' : '#9CC74A');
+      if (/pear/.test(n)) return pears('#B9C94A');
+      if (/peach/.test(n)) return roundFruit('#F5A65A', { blush: '#E8503A', crease: true });
+      if (/nectarine/.test(n)) return roundFruit('#E8622A', { blush: '#F4C04A', crease: true });
+      return roundFruit('#6B2A5A', { crease: true, r: 38 });
+    }
+    case 'rice-grains': {
+      if (/basmati|sona|ponni|idli|jasmine|matta|brown rice/.test(n)) {
+        const [fill, col] = ruled(n, [[/brown basmati/, '#C9A577', '#8A5A2E'], [/brown rice/, '#B8895A', '#6B4A2A'], [/matta/, '#B5603A', '#8E2C2C'],
+          [/basmati/, '#FBF7EE', '#1F6B4A'], [/sona/, '#F7F2E6', '#B3261E'], [/ponni/, '#F7F2E6', '#1E6FB8'], [/idli/, '#F4EEDC', '#7A3FA0'], [/jasmine/, '#FBF7EE', '#2E8B57']], ['#F7F2E6', '#1F6B4A']);
+        return sack(fill, p.name.replace(/ Rice$/, '').toUpperCase(), col, 'grain');
+      }
+      const [kind, col] = ruled(n, [[/broken/, 'round', '#F4EEDC'], [/poha/, 'tea', '#EADBB0'], [/murmura/, 'oval', '#F8F1DE'], [/rava|semolina|sooji/, 'dust', '#EBD9A6'],
+        [/wheat grain/, 'oval', '#C9955A'], [/barley/, 'lentil', '#E3CF9F'], [/bulgur/, 'round', '#C9A060'], [/rolled/, 'lentil', '#E3D2A6'], [/steel/, 'round', '#CDB27A'],
+        [/foxtail/, 'round', '#E8C66A'], [/little/, 'round', '#E6D29A'], [/barnyard/, 'round', '#D9C79A']], ['round', '#E6D29A']);
+      return kind === 'dust' ? powderBowl(col, { bowl: 'steel', bg: '#C9A26A' }) : seedBowl(col, kind, { bowl: hashPick(p.id, ['wood', 'steel', 'clay', 'white']), bg: '#B8955A' });
+    }
+    case 'flour': {
+      if (/batter/.test(n)) return tub(/dosa/.test(n) ? '#2E8B57' : '#E07B1F', shortLabel.replace(/ batter/, ' Batter'));
+      if (/mix/.test(n)) return packet(hashPick(p.id, MEAL_BAGS), p.name, 'dust', '#F1E6C8');
+      if (/whole wheat|chakki|multigrain/.test(n)) return sack('#E9D9B4', p.name.replace(/ Atta/, '').toUpperCase() + ' ATTA', /multigrain/.test(n) ? '#2E8B57' : '#8A5A00', 'powder');
+      const [col] = ruled(n, [[/maida/, '#FAF7F0'], [/besan/, '#EBC65A'], [/rice/, '#F7F4EE'], [/ragi/, '#9C6A4E'], [/jowar/, '#E6DCC4'], [/bajra/, '#A89A80'], [/makki/, '#F2C94C'],
+        [/tapioca|potato|cornstarch|arrowroot/, '#FBFAF6'], [/singhare/, '#EADBB8'], [/rajgira/, '#E3D2A6'], [/buckwheat/, '#8C7A5E'], [/idli rava/, '#F1E6C8']], ['#EADBB8']);
+      return powderBowl(col, { bowl: hashPick(p.id, ['wood', 'steel', 'clay']), bg: '#C9A26A' });
+    }
+    case 'lentils': {
+      const [kind, col] = ruled(n, [[/toor/, 'lentil', '#E3A93A'], [/masoor dal red/, 'lentil', '#E8743B'], [/masoor/, 'lentil', '#8A5A3A'], [/moong dal yellow/, 'lentil', '#E6CB4A'],
+        [/moong/, 'round', '#5E8F3A'], [/urad dal split/, 'lentil', '#F2EDE0'], [/urad/, 'oval', '#2A2522'], [/roasted chana/, 'lentil', '#E8C27A'], [/chana dal/, 'lentil', '#E8B54A'],
+        [/kabuli/, 'chickpea', '#E2BE7E'], [/kala/, 'chickpea', '#6B3E2A'], [/lobia/, 'lentil', '#EFE6D2'], [/rajma chitra/, 'pod', '#C9A07A'], [/rajma/, 'pod', '#8E2A2A'],
+        [/white kidney/, 'pod', '#F2EDE0'], [/moth/, 'round', '#A8784A'], [/green vatana/, 'pea', '#7FA650'], [/vatana/, 'pea', '#E6DCC4'], [/horse/, 'lentil', '#8A6A4A'],
+        [/peanuts/, 'lentil', '#D9A066'], [/soya chunks/, 'ball', '#D9B57A'], [/soya/, 'round', '#D9B57A'], [/field|lima/, 'pod', '#E3DCB8']], ['lentil', '#C9A07A']);
+      return seedBowl(col, kind, { bowl: hashPick(p.id, ['wood', 'steel', 'clay', 'brass', 'white']), bg: col === '#2A2522' || col === '#F2EDE0' || col === '#EFE6D2' ? '#B8955A' : undefined });
+    }
+    case 'tea-coffee': {
+      if (/rose syrup/.test(n)) return juiceBottle('#D0345C', 'Rose Syrup');
+      if (/mango juice/.test(n)) return juiceBottle('#F2A516', 'Mango Juice');
+      if (/instant coffee/.test(n)) return jar('#5B3A22', BRAND_COL[p.brand] || '#5B2A1A', 'Coffee');
+      if (/filter coffee/.test(n)) return packet('#5B2A1A', p.name, 'dust', '#4A2E1A');
+      return packet(BRAND_COL[p.brand] || hashPick(p.id, MEAL_BAGS), p.name, 'tea', /green/.test(n) ? '#5E8F3A' : '#3A2418');
+    }
+    case 'dairy': {
+      if (/whole milk/.test(n)) return carton('#1F6FB8', 'Whole Milk');
+      if (/2 percent/.test(n)) return carton('#2E8B57', '2% Milk');
+      if (/buttermilk/.test(n)) return carton('#7FA650', 'Buttermilk');
+      if (/coconut milk/.test(n)) return carton('#8A6A4A', 'Coconut Milk');
+      if (/yogurt|cream/.test(n)) return tub(ruled(n, [[/mango/, '#F2A516'], [/greek/, '#1F4E9C'], [/low fat/, '#3BA0C9'], [/sour/, '#7FA650'], [/fresh cream/, '#C99A2E']], ['#2D6CB5'])[0],
+        ruled(n, [[/mango/, 'Mango'], [/greek/, 'Greek'], [/low fat/, 'Low Fat'], [/sour/, 'Sour Cream'], [/fresh cream/, 'Cream']], ['Dahi'])[0]);
+      if (/malai/.test(n)) return packet('#2D6CB5', 'Malai Paneer', 'cube', '#F7F3E8');
+      if (/paneer/.test(n)) return paneerBoard();
+      if (/ghee/.test(n)) return jar('#F3C64B', '#C8102E', 'Ghee');
+      if (/butter/.test(n)) return butterBlock();
+      if (/eggs/.test(n)) return eggsBox(/brown/.test(n) ? '#C98A5A' : '#F7F3EA');
+      if (/cheese slices/.test(n)) return cheeseSlices();
+      if (/mozzarella/.test(n)) return whiteBlock('#FBF8F0', '#D9C9A6', true);
+      if (/khoya/.test(n)) return whiteBlock('#EFE0BC', '#D9B57A');
+      return whiteBlock('#F7F4EC', '#C9C2B0');
+    }
+    case 'sweets': {
+      if (/gulab/.test(n)) return recipeArt('gj');
+      if (/rasgulla/.test(n)) return syrupBowl('#C9B48A', '#F4ECD6', '#FBF8F0');
+      if (/rasmalai/.test(n)) return syrupBowl('#E8C27A', '#F2D98A', '#FBF5E6', true);
+      if (/kaju/.test(n)) return sweetsPlate('katli');
+      if (/soan/.test(n)) return sweetsPlate('soan');
+      if (/halwa/.test(n)) return curryBowl('#E8622A', /gajar/.test(n) ? '#E8622A' : '#D99A3A', '#EFE8DC',
+        Array.from({ length: 30 }, () => piece('cube', rand(120, 280), rand(140, 186), pick(['#D9A35B', '#7DAA3C', '#F2EAD6']), rand(0, 90))).join(''));
+      if (/jalebi|imarti/.test(n)) return sweets2('spiral', /imarti/.test(n) ? '#E8502A' : '#F08A2C');
+      if (/ladoo/.test(n)) return sweets2('balls', ruled(n, [[/besan/, '#E8B54A'], [/motichoor/, '#F08A2C']], ['#F2A516'])[0]);
+      if (/peda|sandesh/.test(n)) return sweets2('disc', ruled(n, [[/kesar/, '#F2B43A'], [/milk peda/, '#F1E3C0'], [/sandesh/, '#F7F1E3']], ['#E8C98A'])[0]);
+      if (/chocolate/.test(n)) return sweets2('layered', '#5B3A22');
+      return sweets2('barfi', ruled(n, [[/milk cake/, '#D9B57A'], [/kalakand/, '#F4EEDC'], [/coconut/, '#F7F3E8'], [/pista/, '#B9D36A'], [/anjeer/, '#8A5A3A'], [/mysore/, '#F2C94C']], ['#D9A35B'])[0]);
+    }
+    case 'biscuits': {
+      const dark = /bourbon|oreo|dark fantasy|hide/.test(n);
+      return packet(BRAND_COL[p.brand] || hashPick(p.id, SNACK_BAGS), p.name.replace(/ (Biscuits|Cookies)$/, ''), /rusk/.test(n) ? 'cube' : 'biscuit', dark ? '#4A2E1E' : '#D9A35B');
+    }
+    case 'oils-pickles': {
+      if (/oil/.test(n)) return juiceBottle(ruled(n, [[/mustard/, '#D9A520'], [/sesame/, '#B87A2E'], [/coconut/, '#D9D2B4'], [/groundnut/, '#E8B04A'], [/olive/, '#8DA23A'], [/canola/, '#E9CF5E']], ['#F2C94C'])[0], p.name);
+      if (/tamarind whole/.test(n)) return seedBowl('#6B3A1E', 'pod', { bowl: 'clay' });
+      if (/tamarind/.test(n)) return jar('#5B2A1A', '#8A5A2B', 'Tamarind');
+      if (/chutney/.test(n)) return jar(ruled(n, [[/mint/, '#3F8F3A'], [/coriander/, '#4E9A3E']], ['#5B2A1A'])[0], '#C8102E', 'Chutney');
+      const [col, chunks] = ruled(n, [[/mango/, '#C2401C', ['#E9B44C', '#D46A2A']], [/lime/, '#C99A2E', ['#E8D04A', '#B8862E']], [/mixed/, '#B8501E', ['#F08A2C', '#7FA650', '#F2EAD6']],
+        [/green chili/, '#5E8F3A', ['#3E8E2F', '#8DB04A']], [/garlic/, '#A8641E', ['#F4EEE2', '#E3D2A6']], [/gongura/, '#4E5A2A', ['#3F5A2A', '#6B7A3A']], [/tomato/, '#C2301C', ['#E0342C', '#A8211B']],
+        [/amla/, '#9C8A2E', ['#C9D36A', '#B9A23A']]], ['#C2401C', null]);
+      return jar(col, '#2E7A34', 'Pickle', { chunks: chunks || true });
+    }
+    case 'puja': {
+      if (/incense sticks|agarbatti holder|incense holder/.test(n)) return incense(ruled(n, [[/sandalwood/, '#A8743E'], [/rose/, '#C2185B'], [/jasmine/, '#7A6FB0'], [/brass/, '#C99A2E']], ['#8A5A3A'])[0]);
+      if (/dhoop/.test(n)) return cones();
+      if (/camphor/.test(n)) return seedBowl('#FBFAF6', 'cube', { bowl: 'brass', bg: '#C9A23A' });
+      if (/wicks/.test(n)) return seedBowl('#FBFAF6', 'stick', { bowl: 'brass', bg: '#C9A23A' });
+      if (/diya brass/.test(n)) return diyas('#C99A2E');
+      if (/diya/.test(n)) return diyas();
+      if (/bell/.test(n)) return bell();
+      if (/thali/.test(n)) return pujaThali();
+      if (/kumkum/.test(n)) return powderBowl('#C8102E', { bowl: 'brass' });
+      if (/turmeric/.test(n)) return powderBowl('#E8A317', { bowl: 'brass' });
+      if (/sandalwood/.test(n)) return powderBowl('#D9B48A', { bowl: 'brass' });
+      if (/kalash/.test(n)) return pot('#C99A2E', true);
+      if (/lota/.test(n)) return pot('#B8693A');
+      if (/match/.test(n)) return matchbox();
+      if (/rangoli/.test(n)) return rangoli();
+      if (/garland/.test(n)) return garland();
+      if (/picture/.test(n)) return framedPicture();
+      if (/scraper/.test(n)) return scraper();
+      return rollingPin();
+    }
+    case 'dry-fruits': {
+      if (/desiccated/.test(n)) return powderBowl('#FBF8F0', { bowl: 'clay', bg: '#C9A26A' });
+      const [kind, col] = ruled(n, [[/almond/, 'almond', '#B5703A'], [/cashew/, 'cashew', '#EAD3A2'], [/pistachio/, 'pistachio', '#D9C08A'], [/walnut/, 'walnut', '#B8865B'],
+        [/golden/, 'lentil', '#C99A2E'], [/raisins/, 'lentil', '#3A2418'], [/medjool/, 'date', '#5B2E1A'], [/dates/, 'date', '#8A4A1E'], [/figs/, 'ball', '#8A5A3A'],
+        [/apricots/, 'disc', '#F2A03A'], [/coconut slices/, 'chip', '#F7F3E8'], [/roasted makhana/, 'makhana', '#E8C98A'], [/makhana/, 'makhana', '#F7F1E3'],
+        [/pumpkin/, 'oval', '#6E9A3A'], [/sunflower/, 'oval', '#8A8A80'], [/flax/, 'oval', '#8A5A3A'], [/chia/, 'round', '#3A3A38'], [/sesame seeds white/, 'oval', '#F2EAD6'],
+        [/sesame/, 'oval', '#2A2522'], [/watermelon/, 'oval', '#EFE3C4']], ['round', '#C9A07A']);
+      return seedBowl(col, kind, { bowl: hashPick(p.id, ['wood', 'brass', 'white', 'clay']), bg: '#B8955A' });
+    }
+  }
+  return null;
+}
+
+/* ---------- which drawing each product gets ---------- */
+const { INVENTORY_ITEMS } = require('../data/inventory.js');
+const hashPick = (str, arr) => { let h = 0; for (const c of str) h = (h * 31 + c.charCodeAt(0)) >>> 0; return arr[h % arr.length]; };
+const firstMatch = (n, rules) => { for (const [re, ...v] of rules) if (re.test(n)) return v; return null; };
+const SNACK_BAGS = ['#D9442E', '#7A3FA0', '#E07B1F', '#2F8F4E', '#C0392B', '#2D6CB5', '#8E2C48', '#B8860B', '#1F7A6B', '#C2185B'];
+const FROZEN_BAGS = ['#1E6FB8', '#2E8B57', '#0F7C8C', '#3B5BA9', '#2A9D5C', '#1B5E8C'];
+const MEAL_BAGS = ['#C0392B', '#E07B1F', '#8E2C48', '#2D6CB5', '#B8860B', '#7A3FA0'];
+
+function artFor(p) {
+  const n = p.name.toLowerCase();
+  const fresh = artForNew(p, n);
+  if (fresh) return fresh;
+  if (p.cat === 'snacks') {
+    const [kind, col] = firstMatch(n, [
+      [/banana/, 'chip', /masala/.test(n) ? '#E8A93A' : '#F2C94C'], [/potato chips/, 'chip', '#E8B04A'], [/jackfruit/, 'chip', '#E9B949'],
+      [/bittergourd/, 'chip', '#7A9B3A'], [/soya|thattai/, 'disc', '#D9A35B'], [/tapioca/, 'stick', '#E8C27A'],
+      [/ragi/, 'spiral', '#8A5A3C'], [/palak/, 'spiral', '#6E8F3A'], [/rice murukku/, 'spiral', '#E6D3A3'], [/butter/, 'spiral', '#E8C27A'],
+      [/spicy chakli/, 'spiral', '#C9662E'], [/murukku|chakli/, 'spiral', '#C98F3E'], [/ribbon/, 'stick', '#D9A35B'],
+      [/mixture|bhel/, 'mix', ''], [/bhujia|sev/, 'stick', '#E0A03A'], [/boondi/, 'round', '#E07B1F'],
+      [/chikki/, 'cube', '#C98A3E'], [/peanut/, 'lentil', '#B5652A'], [/chana/, 'chickpea', '#D9A35B'],
+      [/biscuit/, 'biscuit', '#D9A35B'], [/kachori/, 'ball', '#D9A441'], [/sweet para/, 'cube', '#E8C27A'], [/para/, 'cube', '#D9B070'],
+    ]) || ['mix', ''];
+    return packet(hashPick(p.id, SNACK_BAGS), p.name, kind, col);
+  }
+  if (p.cat === 'frozen-veg') {
+    if (/mango pulp/.test(n)) return can('#F2A516', 'ALPHONSO');
+    const [kind, col] = firstMatch(n, [
+      [/palak|sarson|greens/, 'leaf', '#2F7D3B'], [/papdi|guvar/, 'pod', '#6BA539'], [/mogri/, 'stick', '#7DAA3C'],
+      [/tindora|parwal/, 'pod', '#4E8F2E'], [/bhindi/, 'pod', '#5E9B3A'], [/drumstick/, 'stick', '#5E8F3A'], [/chilli/, 'stick', '#3E8E2F'],
+      [/avial|mixed/, 'vegmix', ''], [/lilva|peas|cholya/, 'pea', '#7CC242'], [/corn/, 'round', '#F2C230'], [/sponge/, 'cube', '#9CBF5A'],
+      [/ratalu/, 'cube', '#7B4A8C'], [/aloo/, 'ball', '#D9B070'], [/chhole/, 'chickpea', '#8A5A2B'], [/garlic/, 'cube', '#F4EEE2'],
+      [/amla/, 'ball', '#B9D36A'], [/jamun/, 'ball', '#4B2A5A'],
+    ]) || ['vegmix', ''];
+    return packet(hashPick(p.id, FROZEN_BAGS), p.name, kind, col);
+  }
+  if (p.cat === 'frozen-snacks') {
+    const [kind, col] = firstMatch(n, [
+      [/samosa/, 'samosa', '#D9A441'], [/roll|wrap/, 'roll', '#E2BC78'], [/puff pastry/, 'cube', '#E8C27A'], [/tikki/, 'disc', '#D9A441'],
+      [/cutlet/, 'disc', '#B87A3A'], [/kachori/, 'ball', '#D9A441'], [/cheese/, 'ball', '#F2C94C'], [/manchurian/, 'ball', '#8A4A1E'],
+      [/vada/, 'ball', '#E0A03A'], [/dhokla/, 'cube', '#F2D46B'], [/fingers/, 'stick', '#F2D6A0'], [/pakora spinach/, 'ball', '#7A8F3A'],
+      [/pakora/, 'ball', '#C98F3E'], [/patra/, 'spiral', '#6E7A2E'], [/gota/, 'ball', '#A88A3E'], [/paratha/, 'disc', '#E2BC78'],
+    ]) || ['ball', '#D9A441'];
+    return packet(hashPick(p.id, MEAL_BAGS), p.name, kind, col);
+  }
+  if (p.cat === 'spices') {
+    const bowl = { laxmi: 'wood', deep: 'steel', suhana: 'clay' }[p.brand.toLowerCase()] || 'white';
+    if (/ mix$/.test(n)) return packet(hashPick(p.id, MEAL_BAGS), p.name.replace(/ mix$/i, ''), 'dust',
+      /dal makhani|mutton|egg/.test(n) ? '#7A2E1E' : /kofta|paneer|no onion/.test(n) ? '#D98A3A' : '#B5652A');
+    const seed = firstMatch(n, [[/cumin/, 'oval', '#8C6A3C'], [/coriander seeds/, 'round', '#B8955A'], [/fenugreek/, 'round', '#D9A93A'],
+      [/mustard/, 'round', '#3B2A22'], [/fennel/, 'oval', '#8DA45A'], [/ajwain/, 'oval', '#9C8A5E'], [/pepper/, 'round', '#2A221C'], [/flakes/, 'tea', '#B22A1E']]);
+    if (seed) return seedBowl(seed[1], seed[0], { bowl, bg: seed[1] === '#2A221C' || seed[1] === '#3B2A22' ? '#8C6A3C' : undefined });
+    const [col] = firstMatch(n, [[/turmeric/, '#E8A317'], [/kashmiri/, '#C9341F'], [/byadgi/, '#B22A1E'], [/red chilli/, '#C62E22'], [/paprika/, '#D9502A'],
+      [/coriander/, '#A98A55'], [/garam/, '#7A4A26'], [/sambar/, '#A8572A'], [/tandoori/, '#C2401C']]) || ['#A8572A'];
+    return powderBowl(col, { bowl, whole: /masala/.test(n) });
+  }
+  if (p.cat === 'pantry') {
+    if (/milk powder/.test(n)) return jar('#F7F3E8', '#C8102E', 'Milk Powder', { bg: '#C8102E' });
+    if (/malt|nutrition/.test(n)) return jar('#8A5A35', { Horlicks: '#1F6FB8', Boost: '#E07B1F', Bournvita: '#5B2A86', Complan: '#2E8B57' }[p.brand] || '#1F6FB8',
+      /nutrition/.test(n) ? 'Nutrition' : 'Malt Drink');
+    if (/sugar/.test(n)) return seedBowl('#F1ECE0', 'crystal', { bowl: 'steel', bg: '#9AA7B4' });
+    if (/sabudana/.test(n)) return seedBowl('#F4F1EA', 'round', { bowl: 'clay', bg: '#C9B48A' });
+    if (/quinoa/.test(n)) return seedBowl('#E9DCB8', 'round', { bowl: 'white', bg: '#B8955A' });
+    if (/chia/.test(n)) return seedBowl('#4A4A48', 'round', { bowl: 'white', bg: '#8C8A84' });
+    const [col] = firstMatch(n, [[/ragi/, '#9C6A4E'], [/singoda/, '#EADBB8'], [/rice/, '#F4F1EA'], [/sattu/, '#D9BE8A'], [/coconut/, '#F7F3E8']]) || ['#EADBB8'];
+    return powderBowl(col, { bowl: 'steel', bg: '#C9B48A' });
+  }
+  if (p.cat === 'herbal') {
+    if (/neem/.test(n)) return powderBowl('#7A8F3A', { bowl: 'clay' });
+    if (/amla powder/.test(n)) return powderBowl('#B5A24A', { bowl: 'wood' });
+    if (/ashwagandha/.test(n)) return powderBowl('#C9B48A', { bowl: 'wood', bg: '#8C6A3C' });
+    if (/chatpata/.test(n)) return jar('#B9862E', '#C2401C', 'Chatpata', { chunks: ['#8A5A1E', '#C9A23A', '#6E4A1E'] });
+    if (/amla candy/.test(n)) return jar('#C9B04A', '#2E7A34', 'Amla Candy', { chunks: ['#E2C95A', '#B9A23A', '#F0DC7A'] });
+    if (/ginger candy/.test(n)) return jar('#E8C27A', '#B8860B', 'Ginger Candy', { chunks: ['#D9A441', '#F2D27A', '#C98F3E'] });
+    if (/jamun juice/.test(n)) return juiceBottle('#4B2A5A', 'Jamun Juice');
+    if (/amla juice/.test(n)) return juiceBottle('#8DA83A', 'Amla Juice');
+    if (/paan/.test(n)) return seedBowl('#C2185B', 'confetti', { bowl: 'brass', bg: '#7FBF4A' });
+    if (/rose/.test(n)) return incense('#C2185B');
+    if (/mogra/.test(n)) return incense('#7A6FB0');
+    if (/sandalwood/.test(n)) return incense('#A8743E');
+    return diyas();
+  }
+  return utensil(n);
+}
+
+const ART = Object.fromEntries(INVENTORY_ITEMS.map(p => [p.id, () => artFor(p)]));
+for (const r of ['sarson', 'sambar', 'avial', 'undhiyu', 'biryani', 'dalmakhani', 'bhindi', 'lassi']) ART['r-' + r] = () => dish(r);
+ART['hero-thali'] = () => heroThali();
 
 fs.mkdirSync(OUT, { recursive: true });
+for (const f of fs.readdirSync(OUT)) if (f.endsWith('.svg')) fs.unlinkSync(path.join(OUT, f));
 for (const [id, draw] of Object.entries(ART)) {
   seed(id);
   fs.writeFileSync(path.join(OUT, id + '.svg'), draw());
