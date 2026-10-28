@@ -168,6 +168,8 @@ nav.main a:hover,nav.main a.active{color:var(--accent-ink)}
 .recipe .go{width:38px;height:38px;border-radius:50%;background:var(--accent-btn);color:#fff;display:grid;place-items:center;flex:none;transition:transform .15s}
 .recipe:hover .go{transform:translateX(3px)}
 .recipe .meta{font-size:.8rem;color:var(--muted)}
+.recipe .r-add{margin-top:14px;width:100%}
+.recipe:focus-visible{outline:3px solid var(--accent)}
 
 /* search toolbar */
 .toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:8px 0 14px}
@@ -678,7 +680,7 @@ function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add
 /* ---------- shopping list state ---------- */
 let list = store.get().filter(x => !x.pid || byId[x.pid]); // [{key,pid,name,qty,done,notes:[]}]
 const entry = pid => list.find(x => x.pid === pid);
-function save(){ store.set(list); renderList(); renderGrid(); renderSpecials(); }
+function save(){ store.set(list); renderList(); renderGrid(); renderSpecials(); renderRecipes(); }
 
 function addProduct(pid, note, qty = 1){
   const p = byId[pid]; if (!p) return;
@@ -815,14 +817,21 @@ function recipeOut(r){ return r.ing.filter(([id]) => id && byId[id].stock === 'o
 function renderRecipes(){
   $('#recipeGrid').innerHTML = RECIPES.map(r => {
     const n = recipeOut(r);
-    return `<button class="card recipe" data-act="recipe" data-id="${r.id}">
+    const pids = recipePids(r), added = pids.length && pids.every(pid => (entry(pid) || {notes:[]}).notes.includes(r.name));
+    const total = pids.reduce((t, pid) => t + byId[pid].price, 0);
+    return `<article class="card recipe" data-act="recipe" data-id="${r.id}" tabindex="0" role="button" aria-label="View ${esc(r.name)} recipe">
       <span class="plate"><span aria-hidden="true">${r.e}</span>${photo('r-' + r.id, r.name)}</span>
       <span class="tags"><span class="tag diet">${r.diet}</span>${n ? `<span class="tag out">${n} swapped</span>` : ''}</span>
       <span class="name">${esc(r.name)}</span>
       <span class="sub2">${esc(r.desc)}</span>
-      <span class="foot"><span class="meta">${r.time} · Serves ${r.serves} · ${r.ing.filter(i=>i[0]).length} items</span><span class="go">${icon('i-arrow',18)}</span></span>
-    </button>`;
+      <span class="foot"><span class="meta">${r.time} · Serves ${r.serves} · ${pids.length} items · ${money(total)}</span><span class="go">${icon('i-arrow',18)}</span></span>
+      <button class="pill ${added ? '' : 'primary'} sm r-add" data-act="add-recipe-all" data-id="${r.id}">${added ? '✓ In your list' : `+ Add ${pids.length} items to list`}</button>
+    </article>`;
   }).join('');
+}
+// Store products a recipe needs, with sold-out ones swapped for their alternative.
+function recipePids(r){
+  return [...new Set(r.ing.filter(i => i[0]).map(([id]) => { const p = byId[id]; return p.stock === 'out' && p.alt ? p.alt : id; }))];
 }
 function openRecipe(id){
   const r = RECIPES.find(x => x.id === id), dlg = $('#recipeDlg');
@@ -1091,12 +1100,17 @@ document.addEventListener('click', async e => {
   else if (act === 'close-list'){ openList(false); }
   else if (act === 'recipe'){ openRecipe(id); }
   else if (act === 'close-dlg'){ $('#recipeDlg').close(); }
+  else if (act === 'add-recipe-all'){
+    const r = RECIPES.find(x => x.id === id), pids = recipePids(r);
+    pids.forEach(pid => addProduct(pid, r.name));
+    save(); renderRecipes(); toast(`Added ${pids.length} items for ${r.name} — open the recipe to untick anything you already have`);
+  }
   else if (act === 'add-recipe'){
     const r = RECIPES.find(x => x.id === id);
     const picks = [...$('#recipeDlg').querySelectorAll('input[data-pid]:checked')].map(c => c.dataset.pid);
     if (!picks.length){ toast('Tick at least one ingredient'); return; }
     picks.forEach(pid => addProduct(pid, r.name));
-    save(); $('#recipeDlg').close(); toast(`Added ${picks.length} items for ${r.name}`); openList(true);
+    save(); renderRecipes(); $('#recipeDlg').close(); toast(`Added ${picks.length} items for ${r.name}`); openList(true);
   }
   else if (act === 'print'){ if (!list.length) return toast('Your list is empty'); window.print(); }
   else if (act === 'share'){
@@ -1121,7 +1135,10 @@ $('#customForm').addEventListener('submit', e => {
   list.push({key:'c' + Date.now(), pid:null, name:v, qty:1, done:false, notes:[]}); $('#customInput').value = ''; save();
 });
 ['#recipeDlg', '#cheapDlg', '#checkoutDlg', '#orderDlg'].forEach(d => $(d).addEventListener('click', e => { if (e.target === e.currentTarget) e.currentTarget.close(); }));
-document.addEventListener('keydown', e => { if (e.key === 'Escape') openList(false); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') openList(false);
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('article.recipe')) { e.preventDefault(); openRecipe(e.target.dataset.id); }
+});
 document.addEventListener('submit', e => { if (e.target.id === 'checkoutForm') { e.preventDefault(); placeOrder(e.target); } });
 
 // Highlight the nav link for the section in view.
