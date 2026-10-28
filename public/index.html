@@ -268,7 +268,7 @@ aside.drawer.on{transform:none;visibility:visible}
 @keyframes bump{40%{transform:scale(1.07)}}
 .cheap{margin-top:10px;border:0;background:none;padding:0;color:var(--accent-ink);font-weight:500;font-size:.8rem;text-align:left;display:flex;align-items:center;gap:6px}
 .cheap:hover{text-decoration:underline}
-.cheap-sm{border:0;background:var(--green-soft);color:var(--green);border-radius:999px;padding:2px 9px;font-size:.72rem;font-weight:600;margin-top:3px}
+.cheap-sm{display:block;cursor:pointer;border:0;background:var(--green-soft);color:var(--green);border-radius:999px;padding:2px 9px;font-size:.72rem;font-weight:600;margin-top:3px}
 .ch-head{display:flex;gap:14px;align-items:center;padding:22px 24px 14px}
 .ch-head small{display:block;color:var(--muted);font-size:.78rem}
 .ch-head b{font-family:"Playfair Display",serif;font-size:1.35rem;display:block;line-height:1.2}
@@ -702,8 +702,13 @@ function cheaperFor(p){
     .sort((a,b) => b.score - a.score || a.q.price - b.q.price)
     .slice(0, 4).map(x => x.q);
 }
+// No close match? Fall back to the cheapest in-stock products in the same aisle.
+function aisleCheaper(p){
+  return P.filter(q => q.id !== p.id && q.cat === p.cat && q.stock !== 'out' && q.price < p.price)
+    .sort((a,b) => a.price - b.price).slice(0, 4);
+}
 function openCheaper(id){
-  const p = byId[id], alts = cheaperFor(p), inList = !!entry(id), dlg = $('#cheapDlg');
+  const p = byId[id], close = cheaperFor(p), alts = close.length ? close : aisleCheaper(p), inList = !!entry(id), dlg = $('#cheapDlg');
   const rows = alts.map(q => {
     const save = p.price - q.price;
     return `<div class="ch-row"><span class="big-th" style="width:52px;height:52px"><span aria-hidden="true">${q.e}</span>${photo(q.id)}</span>
@@ -713,7 +718,7 @@ function openCheaper(id){
   dlg.innerHTML = `<div class="ch-head"><span class="big-th"><span aria-hidden="true">${p.e}</span>${photo(p.id)}</span>
       <div><small>Cheaper alternatives to</small><b>${esc(brandName(p))}</b><small>${money(p.price)} · ${esc(catName(p.cat))}</small></div>
       <button class="x" data-act="close-cheap" aria-label="Close">×</button></div>
-    <div class="ch-body">${alts.length ? rows :
+    <div class="ch-body">${alts.length && !close.length ? `<p style="margin:0 0 6px;color:var(--muted);font-size:.88rem">No exact match is cheaper, but these ${esc(catName(p.cat))} picks cost less:</p>` : ''}${alts.length ? rows :
       `<p style="margin:0 0 16px;color:var(--muted)">This is already our lowest price for a product like this. Staff can tell you about other sizes or upcoming deals.</p>
        <a class="pill" href="tel:+14102032525">Call (410) 203-2525</a>`}</div>`;
   dlg.showModal();
@@ -860,7 +865,7 @@ function renderList(){
     return `<div class="li ${x.done?'done':''}">
       <input type="checkbox" ${x.done?'checked':''} data-act="done" data-key="${esc(x.key)}" aria-label="Got it">
       <span class="e"><span aria-hidden="true">${p ? p.e : '📝'}</span>${p ? photo(p.id) : ''}</span>
-      <div class="t"><div class="n">${esc(x.name)}</div>${p ? `<small>${money(p.price)} each${x.qty > 1 ? ` · ${money(p.price * x.qty)}` : ''}</small>` : ''}${p && cheaperFor(p).length ? `<button class="cheap-sm" data-act="cheaper" data-id="${p.id}">Request cheaper alternative · save up to ${money(p.price - Math.min(...cheaperFor(p).map(q => q.price)))}</button>` : ''}${x.notes.length ? `<small>For: ${esc(x.notes.join(', '))}</small>` : ''}${oos}</div>
+      <div class="t"><div class="n">${esc(x.name)}</div>${p ? `<small>${money(p.price)} each${x.qty > 1 ? ` · ${money(p.price * x.qty)}` : ''}</small>` : ''}${p ? `<button class="cheap-sm" data-act="cheaper" data-id="${p.id}">Request cheaper alternative${cheaperFor(p).length ? ` · save up to ${money(p.price - Math.min(...cheaperFor(p).map(q => q.price)))}` : ''}</button>` : ''}${x.notes.length ? `<small>For: ${esc(x.notes.join(', '))}</small>` : ''}${oos}</div>
       <div class="mini"><button data-act="qty" data-key="${esc(x.key)}" data-d="-1" aria-label="Fewer">−</button><span>${x.qty}</span><button data-act="qty" data-key="${esc(x.key)}" data-d="1" aria-label="More">+</button></div>
       <button class="rm" data-act="rm" data-key="${esc(x.key)}" aria-label="Remove">✕</button></div>`;
   }).join('')).join('');
