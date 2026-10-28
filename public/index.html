@@ -138,7 +138,7 @@ nav.main a:hover,nav.main a.active{color:var(--accent-ink)}
 .chip .ct{opacity:.55;font-size:.82em;margin-left:2px}
 .card h3,.card .name{font-weight:500;font-size:1.08rem;display:block}
 .card .sub2{color:var(--muted);font-size:.84rem;display:block}
-.foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;padding-top:18px}
+.foot{display:flex;align-items:center;justify-content:space-between;gap:8px;row-gap:10px;flex-wrap:wrap;margin-top:auto;padding-top:18px}
 .price{font-weight:600;font-size:1.02rem}
 .price s{color:var(--muted);font-weight:400;font-size:.82rem;margin-left:6px}
 .stepper{display:flex;align-items:center;gap:4px;background:var(--surface);border-radius:999px;padding:3px}
@@ -266,6 +266,28 @@ aside.drawer.on{transform:none;visibility:visible}
 .spend small{display:block;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;opacity:.7}
 .spend b{display:block;font-size:1.15rem;font-weight:600;line-height:1.2}
 .spend .saved{display:block;font-size:.72rem;color:#7FDCA6}
+.spend .sb{display:block;font-size:.72rem;opacity:.75}
+.spend .sb:empty{display:none}
+.spend.over{background:var(--red)}
+.spend.over .ic{background:#fff;color:var(--red)}
+.spend.over .sb{opacity:1;font-weight:600}
+.budget{margin:6px 0 14px;background:var(--surface);border-radius:16px;padding:12px 14px}
+.budget .row{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:.88rem}
+.budget .row b{font-weight:600}
+.budget .bar{height:8px;border-radius:999px;background:var(--surface-2);margin:8px 0 6px;overflow:hidden}
+.budget .bar i{display:block;height:100%;border-radius:999px;background:var(--green);transition:width .3s}
+.budget.near .bar i{background:var(--amber)}
+.budget.over .bar i{background:var(--red)}
+.budget .msg{font-size:.82rem;color:var(--green);font-weight:500}
+.budget.near .msg{color:var(--amber)}
+.budget.over .msg{color:var(--red)}
+.budget form{display:flex;gap:6px;align-items:center;margin-top:8px}
+.budget input{flex:1;min-width:0;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:999px;padding:8px 12px;font:inherit}
+.budget button{border:0;border-radius:999px;padding:8px 12px;font:500 .82rem Poppins,sans-serif;background:var(--dark);color:#fff;cursor:pointer}
+.budget button.ghost{background:none;color:var(--muted);text-decoration:underline;padding:4px}
+.budget .find{background:var(--red);margin-top:8px;width:100%}
+.budget-err{color:var(--red);font-size:.78rem;margin-top:4px}
+.sum.over{background:var(--red-soft);color:var(--red)}
 .spend.bump{animation:bump .35s}
 @keyframes bump{40%{transform:scale(1.07)}}
 .cheap{margin-top:10px;border:0;background:none;padding:0;color:var(--accent-ink);font-weight:500;font-size:.8rem;text-align:left;display:flex;align-items:center;gap:6px}
@@ -306,6 +328,14 @@ aside.drawer.on{transform:none;visibility:visible}
 .tracker.picked-up .tdot{background:var(--muted);box-shadow:none}
 @keyframes pulse{50%{transform:scale(1.25)}}
 @media (max-width:600px){.tracker{bottom:94px}}
+.per{font-size:.72rem;font-weight:500;color:var(--muted)}
+#dealsView{padding:36px 0 90px;min-height:75vh}
+.deals-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
+.deal-stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px}
+.deal-stats div{background:var(--surface);border-radius:20px;padding:12px 18px;box-shadow:var(--shadow);min-width:120px}
+.deal-stats b{display:block;font-size:1.5rem;font-weight:600;color:var(--accent-ink);line-height:1.2}
+.deal-stats small{color:var(--muted);font-size:.78rem}
+.deal-n:empty{display:none}
 .nav-n{background:var(--accent-btn);color:#fff;border-radius:999px;font-size:.7rem;font-weight:600;padding:1px 7px;margin-left:6px;vertical-align:2px}
 .nav-n[hidden],.bag .count[hidden]{display:none}
 a.bag{color:inherit}
@@ -397,7 +427,7 @@ a.bag{color:inherit}
     <a class="logo" href="/staff" title="Staff sign in">Ganesh <em>Brothers</em></a>
     <nav class="main" aria-label="Main">
       <a href="#top" data-nav="top" class="active">Home</a>
-      <a href="#specials" data-nav="specials">Specials</a>
+      <a href="#deals" data-nav="deals">Deals<span class="nav-n deal-n" id="dealCount"></span></a>
       <a href="#shop" data-nav="shop">Shop</a>
       <a href="#recipes" data-nav="recipes">Recipes</a>
       <a href="#visit" data-nav="visit">Visit Us</a>
@@ -431,11 +461,6 @@ a.bag{color:inherit}
       </div>
       <div class="hero-art">
         <img class="thali" src="images/hero-thali.svg" alt="A steel thali with dal, palak paneer, chana, raita, rice, roti and gulab jamun">
-        <a class="deal" href="#specials">
-          <span class="ic"><svg width="22" height="22"><use href="#i-pct"/></svg></span>
-          <b id="dealPct">Specials</b>
-          <small><span>Off</span> this week's specials</small>
-        </a>
         <svg class="float" style="--r:-20deg;top:48%;left:-6%;width:70px;height:84px"><use href="#leaf"/></svg>
         <svg class="float" style="--r:25deg;bottom:4%;left:12%;width:44px;height:52px;animation-delay:-3s"><use href="#leaf"/></svg>
         <svg class="float" style="top:26%;right:-7%;width:110px;height:110px;animation-delay:-1.5s"><use href="#tomato"/></svg>
@@ -460,7 +485,7 @@ a.bag{color:inherit}
           <h2>Fresh arrivals &amp; specials</h2>
         </div>
         <div class="tabs" role="tablist">
-          <button role="tab" aria-selected="true" data-tab="sale">Weekly specials</button>
+          <button role="tab" aria-selected="true" data-tab="sale">Weekly deals</button>
           <button role="tab" aria-selected="false" data-tab="new">Fresh arrivals</button>
         </div>
       </div>
@@ -541,6 +566,30 @@ a.bag{color:inherit}
   </section>
 </main>
 
+<section id="dealsView" hidden>
+  <div class="wrap">
+    <a class="back" href="#top">← Back to the store</a>
+    <div class="deals-head">
+      <div>
+        <div class="eyebrow" id="dealsWeek"></div>
+        <h2>This week's deals</h2>
+        <p class="sub" id="dealsSub"></p>
+      </div>
+      <div class="deal-stats" id="dealStats"></div>
+    </div>
+    <div class="toolbar">
+      <select id="dealSort" aria-label="Sort deals">
+        <option value="pct">Biggest savings (%)</option>
+        <option value="amt">Biggest savings ($)</option>
+        <option value="low">Lowest price</option>
+        <option value="az">Name: A–Z</option>
+      </select>
+    </div>
+    <div class="chips" id="dealChips" role="toolbar" aria-label="Deal aisles"></div>
+    <div class="grid" id="dealGrid"></div>
+  </div>
+</section>
+
 <section id="myOrdersView" hidden>
   <div class="wrap" style="max-width:980px">
     <a class="back" href="#top">← Back to the store</a>
@@ -562,7 +611,7 @@ a.bag{color:inherit}
 
 <button class="spend" id="spend" data-act="open-list" aria-label="Open shopping list">
   <span class="ic"><svg width="22" height="22"><use href="#i-bag"/></svg><i id="spendCount">0</i></span>
-  <span><small>List total</small><b id="spendTotal">$0.00</b><span class="saved" id="spendSaved"></span></span>
+  <span><small>List total</small><b id="spendTotal">$0.00</b><span class="saved" id="spendSaved"></span><span class="sb" id="spendBudget"></span></span>
 </button>
 
 <div class="scrim" id="scrim" data-act="close-list"></div>
@@ -576,6 +625,7 @@ a.bag{color:inherit}
     <div class="total"><span>Estimated total</span><span id="total">$0.00</span></div>
     <div class="savings" id="savings" hidden></div>
     <small id="listMeta">Sorted by aisle. Sample prices; in-store prices may vary.</small>
+    <div class="budget" id="budget"></div>
     <button class="pill primary send" data-act="checkout">Send order for pickup</button>
     <div class="dr-actions">
       <button class="primary" data-act="print">Print list</button>
@@ -588,6 +638,7 @@ a.bag{color:inherit}
 <dialog id="recipeDlg"></dialog>
 <dialog id="cheapDlg"></dialog>
 <dialog id="checkoutDlg"></dialog>
+<dialog id="savingsDlg"></dialog>
 <dialog id="orderDlg"></dialog>
 <button class="tracker" id="tracker" data-act="open-order" hidden></button>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -664,7 +715,14 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money = n => '$' + n.toFixed(2);
 const brandName = p => (p.brand && !p.name.startsWith(p.brand) ? p.brand + ' ' : '') + p.name;
-const priceTag = p => p.price ? `<span class="price">${money(p.price)}${p.was ? `<s>${money(p.was)}</s>` : ''}</span>` : `<span class="price muted">Price in store</span>`;
+// unit 'lb' | 'each' | 'bunch' = price per pound / piece / bunch; anything else is the pack size.
+const PER = {lb:'/ lb', each:'each', bunch:'/ bunch'};
+const per = p => PER[p.unit] ? ` <small class="per">${PER[p.unit]}</small>` : '';
+const sizeLabel = p => ({lb:'Sold by the pound', each:'Sold each', bunch:'Per bunch'})[p.unit] || p.unit || '';
+const qtyLabel = (p, q) => p && p.unit === 'lb' ? `${q} lb` : `${q}`;
+const qtyTimes = (p, q) => p && p.unit === 'lb' ? `${q} lb` : `${q} ×`;
+const pctOff = p => p.was ? Math.round((p.was - p.price) / p.was * 100) : 0;
+const priceTag = p => p.price ? `<span class="price">${money(p.price)}${per(p)}${p.was ? `<s>${money(p.was)}</s>` : ''}</span>` : `<span class="price muted">Price in store</span>`;
 // A product's own photo if it has one (photo: in data/inventory.js), else its drawing from images/<name>.svg
 // (made by tools/make-art.js). The emoji behind it shows if the file is missing.
 const photo = (name, alt = '') => `<img class="photo" src="${esc((byId[name] && byId[name].photo) || `images/${name}.svg`)}" alt="${esc(alt)}" loading="lazy" onerror="this.remove()">`;
@@ -680,7 +738,7 @@ function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add
 /* ---------- shopping list state ---------- */
 let list = store.get().filter(x => !x.pid || byId[x.pid]); // [{key,pid,name,qty,done,notes:[]}]
 const entry = pid => list.find(x => x.pid === pid);
-function save(){ store.set(list); renderList(); renderGrid(); renderSpecials(); renderRecipes(); }
+function save(){ store.set(list); renderList(); renderGrid(); renderSpecials(); renderRecipes(); renderDeals(); }
 
 function addProduct(pid, note, qty = 1){
   const p = byId[pid]; if (!p) return;
@@ -714,7 +772,7 @@ function openCheaper(id){
   const rows = alts.map(q => {
     const save = p.price - q.price;
     return `<div class="ch-row"><span class="big-th" style="width:52px;height:52px"><span aria-hidden="true">${q.e}</span>${photo(q.id)}</span>
-      <div class="t"><b>${esc(brandName(q))}</b><small>${money(q.price)} · <span class="save">Save ${money(save)} (${Math.round(save / p.price * 100)}%)</span></small></div>
+      <div class="t"><b>${esc(brandName(q))}</b><small>${money(q.price)}${PER[q.unit] ? ' ' + PER[q.unit] : ' · ' + esc(q.unit)} · <span class="save">Save ${money(save)} (${Math.round(save / p.price * 100)}%)</span></small></div>
       <button class="pill primary sm" data-act="take-cheaper" data-from="${p.id}" data-id="${q.id}">${inList ? 'Swap in list' : 'Add to list'}</button></div>`;
   }).join('');
   dlg.innerHTML = `<div class="ch-head"><span class="big-th"><span aria-hidden="true">${p.e}</span>${photo(p.id)}</span>
@@ -749,7 +807,7 @@ function renderStatus(){
 function card(p){
   const out = p.stock === 'out', ex = entry(p.id);
   const tags = [
-    p.special && !out ? '<span class="tag sale">Special</span>' : '',
+    p.was && !out ? `<span class="tag sale">Save ${pctOff(p)}%</span>` : '',
     p.isNew ? '<span class="tag new">New</span>' : '',
     p.stock === 'low' ? '<span class="tag low">Few left</span>' : '',
     out ? '<span class="tag out">Sold out</span>' : ''
@@ -757,7 +815,7 @@ function card(p){
   const badge = out
     ? `<span class="cartb off" title="Sold out">${icon('i-cart')}</span>`
     : `<button class="cartb ${ex?'in':''}" data-act="add" data-id="${p.id}" title="Add to list" aria-label="Add ${esc(brandName(p))} to list">${ex ? `<b>${ex.qty}</b>` : icon('i-cart')}</button>`;
-  const stepper = ex ? `<div class="stepper"><button data-act="qty" data-key="${p.id}" data-d="-1" aria-label="Fewer">−</button><span>${ex.qty}</span><button data-act="qty" data-key="${p.id}" data-d="1" aria-label="More">+</button></div>` : '';
+  const stepper = ex ? `<div class="stepper"><button data-act="qty" data-key="${p.id}" data-d="-1" aria-label="Fewer">−</button><span>${qtyLabel(p, ex.qty)}</span><button data-act="qty" data-key="${p.id}" data-d="1" aria-label="More">+</button></div>` : '';
   const a = out && byId[p.alt];
   const alt = a ? `<div class="alt">Try instead:<b>${esc(brandName(a))}</b>
       <button data-act="add" data-id="${a.id}">${entry(a.id) ? '✓ In your list' : '+ Add alternative'}</button></div>` : '';
@@ -765,7 +823,7 @@ function card(p){
     <div class="plate"><span aria-hidden="true">${p.e}</span>${photo(p.id, p.name)}</div>${badge}
     <div class="tags">${tags}</div>
     ${p.brand ? `<span class="brand">${esc(p.brand)}</span>` : ''}<h3>${esc(p.name)}</h3>
-    <span class="sub2">${esc(catName(p.cat))}</span>
+    <span class="sub2">${esc(sizeLabel(p))} · ${esc(catName(p.cat))}</span>
     <div class="foot">${priceTag(p)}${stepper}</div>
     ${alt}
   </article>`;
@@ -805,11 +863,32 @@ function renderHeroBits(){
   const sun = new Date(mon); sun.setDate(mon.getDate()+6);
   const f = d => d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
   $('#weekLabel').textContent = `This week · ${f(mon)} – ${f(sun)}`;
-  const best = Math.max(...P.filter(p => p.was && p.stock !== 'out').map(p => (p.was - p.price) / p.was));
-  $('#dealPct').textContent = `Up to ${Math.round(best * 100)}%`;
   const fresh = P.filter(p => p.isNew);
   $('#freshStack').innerHTML = fresh.slice(0,4).map(p => `<span title="${esc(p.name)}">${photo(p.id, p.name)}</span>`).join('') +
     (fresh.length > 4 ? `<span class="more">+${fresh.length-4}</span>` : '');
+}
+
+/* ---------- deals tab ---------- */
+const dealState = {cat:'all', sort:'pct'};
+const DEALS = () => P.filter(p => p.was && p.price < p.was && p.stock !== 'out');
+function renderDeals(){
+  const all = DEALS();
+  $('#dealCount').textContent = all.length;
+  if ($('#dealsView').hidden) return;
+  const now = new Date(), mon = new Date(now); mon.setDate(now.getDate() - ((now.getDay()+6)%7));
+  const sun = new Date(mon); sun.setDate(mon.getDate()+6);
+  const f = d => d.toLocaleDateString('en-US',{weekday:'short', month:'short', day:'numeric'});
+  $('#dealsWeek').textContent = `Valid ${f(mon)} – ${f(sun)}`;
+  $('#dealsSub').textContent = 'Weekly prices on staples, snacks and fresh produce. Add them to your list or send a pickup order — the savings show in your list total.';
+  const best = Math.max(...all.map(pctOff)), cats = [...new Set(all.map(p => p.cat))];
+  $('#dealStats').innerHTML = `<div><b>${all.length}</b><small>deals this week</small></div><div><b>${best}%</b><small>biggest discount</small></div><div><b>${cats.length}</b><small>aisles on sale</small></div>`;
+  if (dealState.cat !== 'all' && !cats.includes(dealState.cat)) dealState.cat = 'all';
+  $('#dealChips').innerHTML = [{id:'all', name:'All deals', e:'🏷️'}, ...CATS.filter(c => cats.includes(c.id))].map(c =>
+    `<button class="chip" data-act="deal-cat" data-cat="${c.id}" aria-pressed="${dealState.cat === c.id}">${c.e} ${esc(c.name)} <span class="ct">${c.id === 'all' ? all.length : all.filter(p => p.cat === c.id).length}</span></button>`).join('');
+  let items = all.filter(p => dealState.cat === 'all' || p.cat === dealState.cat);
+  const sorts = {pct: (a,b) => pctOff(b) - pctOff(a), amt: (a,b) => (b.was - b.price) - (a.was - a.price), low: (a,b) => a.price - b.price, az: (a,b) => a.name.localeCompare(b.name)};
+  items.sort(sorts[dealState.sort]);
+  $('#dealGrid').innerHTML = items.map(card).join('');
 }
 
 /* ---------- recipes ---------- */
@@ -843,7 +922,7 @@ function openRecipe(id){
       <div><div class="nm">${esc(brandName(use))}</div><div class="q">${esc(ing[1])}</div>
       ${out ? `<div class="swap">${esc(brandName(p))} is sold out — swapped for ${esc(brandName(use))}</div>` : ''}
       ${entry(use.id) ? '<div class="q">✓ Already in your list</div>' : ''}</div>
-      <span class="pr">${money(use.price)}</span></label>`;
+      <span class="pr">${money(use.price)}${PER[use.unit] ? ' ' + PER[use.unit] : ''}</span></label>`;
   }).join('');
   dlg.innerHTML = `<div class="dlg-hero"><span aria-hidden="true">${r.e}</span>${photo('r-' + r.id, r.name)}<button class="x" data-act="close-dlg" aria-label="Close">×</button></div>
     <div class="dlg-head"><h3>${esc(r.name)}</h3><p>${r.time} · Serves ${r.serves} · ${r.diet}</p></div>
@@ -860,6 +939,69 @@ function openRecipe(id){
 }
 
 /* ---------- list drawer ---------- */
+/* ---------- budget ---------- */
+// The customer's budget for this list, saved in the browser. 0 = no budget set.
+let budget = 0;
+try { budget = Math.max(0, Number(localStorage.getItem('gb-budget')) || 0); } catch {}
+const listTotal = () => list.reduce((s,x) => s + (x.pid ? byId[x.pid].price * x.qty : 0), 0);
+let budgetEditing = false, budgetError = '', wasOver = budget > 0 && listTotal() > budget;
+function setBudget(value){
+  const v = String(value).replace(/[$,\s]/g, '');
+  if (v === '') { budget = 0; budgetError = ''; }
+  else if (!/^\d+(\.\d{1,2})?$/.test(v)) { budgetError = 'Enter an amount like 50 or 75.50.'; return false; }
+  else if (+v < 1 || +v > 10000) { budgetError = 'Choose a budget between $1 and $10,000.'; return false; }
+  else { budget = +v; budgetError = ''; }
+  try { budget ? localStorage.setItem('gb-budget', budget) : localStorage.removeItem('gb-budget'); } catch {}
+  budgetEditing = false; wasOver = listTotal() > budget && budget > 0;
+  return true;
+}
+function renderBudget(total){
+  const el = $('#budget'), left = budget - total, used = budget ? total / budget : 0;
+  const status = !budget ? '' : left < 0 ? 'over' : used >= 0.85 ? 'near' : 'ok';
+  el.className = 'budget ' + status;
+  if (!budget || budgetEditing) {
+    el.innerHTML = `<div class="row"><b>${budget ? 'Change your budget' : 'Set a budget'}</b><span style="color:var(--muted);font-size:.8rem">We'll warn you if your list goes over</span></div>
+      <form id="budgetForm"><input id="budgetInput" inputmode="decimal" placeholder="e.g. 50" value="${budget || ''}" aria-label="Budget in dollars">
+      <button>Save</button>${budget ? '<button type="button" class="ghost" data-act="budget-clear">Remove</button>' : ''}</form>
+      ${budgetError ? `<div class="budget-err" role="alert">${esc(budgetError)}</div>` : ''}`;
+  } else {
+    const msg = left < 0 ? `Over budget by ${money(-left)}` : used >= 0.85 ? `Almost there — ${money(left)} left` : `${money(left)} left to spend`;
+    el.innerHTML = `<div class="row"><b>Budget ${money(budget)}</b><button class="ghost" data-act="budget-edit">Edit</button></div>
+      <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.min(100, Math.round(used * 100))}"><i style="width:${Math.min(100, used * 100).toFixed(1)}%"></i></div>
+      <div class="msg">${msg}</div>
+      ${left < 0 ? `<button class="find" data-act="find-savings">Find savings to get back under budget</button>` : ''}`;
+  }
+  // corner tab
+  $('#spend').classList.toggle('over', status === 'over');
+  $('#spendBudget').textContent = budget ? (left < 0 ? `${money(-left)} over budget` : `of ${money(budget)} budget`) : '';
+  // warn once when the list goes over
+  if (status === 'over' && !wasOver) toast(`Heads up: your list is ${money(-left)} over your ${money(budget)} budget`);
+  wasOver = status === 'over';
+}
+// Every list item that has a cheaper option, with the swap that saves the most (price difference × quantity).
+function budgetSwaps(){
+  return list.filter(x => x.pid).map(x => {
+    const p = byId[x.pid], alts = cheaperFor(p);
+    if (!alts.length) return null;
+    const best = alts.reduce((a,b) => a.price < b.price ? a : b);
+    return {x, p, best, save: (p.price - best.price) * x.qty};
+  }).filter(Boolean).sort((a,b) => b.save - a.save);
+}
+function openSavings(){
+  const total = listTotal(), over = total - budget, swaps = budgetSwaps(), dlg = $('#savingsDlg');
+  let running = 0, enough = -1;
+  swaps.forEach((s, i) => { running += s.save; if (enough < 0 && running >= over) enough = i; });
+  const all = swaps.reduce((t, s) => t + s.save, 0);
+  dlg.innerHTML = `<div class="ch-head"><div><small>Budget ${money(budget)} · list ${money(total)}</small><b>${over > 0 ? `${money(over)} over budget` : 'You’re within budget'}</b>
+      <small>${swaps.length ? (all >= over ? `Swapping the top ${enough + 1} item${enough ? 's' : ''} gets you back under budget.` : `These swaps save ${money(all)} — you may also need to remove something.`) : 'No cheaper versions found — try lowering a quantity or removing an item.'}</small></div>
+      <button class="x" data-act="close-savings" aria-label="Close">×</button></div>
+    <div class="ch-body">${swaps.map((s, i) => `<div class="ch-row" style="${enough < 0 || i <= enough ? '' : 'opacity:.75'}">
+      <span class="big-th" style="width:48px;height:48px">${photo(s.best.id)}</span>
+      <div class="t"><b>${esc(brandName(s.p))} → ${esc(brandName(s.best))}</b><small>${qtyTimes(s.p, s.x.qty)} · ${money(s.p.price)} → ${money(s.best.price)} · <span class="save">save ${money(s.save)}</span></small></div>
+      <button class="pill primary sm" data-act="budget-swap" data-from="${s.p.id}" data-id="${s.best.id}">Swap</button></div>`).join('')}</div>`;
+  if (!dlg.open) dlg.showModal();
+}
+
 function renderList(){
   const n = list.length;
   document.querySelectorAll('[data-count]').forEach(b => { b.textContent = n || ''; b.toggleAttribute('data-zero', !n); });
@@ -874,8 +1016,8 @@ function renderList(){
     return `<div class="li ${x.done?'done':''}">
       <input type="checkbox" ${x.done?'checked':''} data-act="done" data-key="${esc(x.key)}" aria-label="Got it">
       <span class="e"><span aria-hidden="true">${p ? p.e : '📝'}</span>${p ? photo(p.id) : ''}</span>
-      <div class="t"><div class="n">${esc(x.name)}</div>${p ? `<small>${money(p.price)} each${x.qty > 1 ? ` · ${money(p.price * x.qty)}` : ''}</small>` : ''}${p ? `<button class="cheap-sm" data-act="cheaper" data-id="${p.id}">Request cheaper alternative${cheaperFor(p).length ? ` · save up to ${money(p.price - Math.min(...cheaperFor(p).map(q => q.price)))}` : ''}</button>` : ''}${x.notes.length ? `<small>For: ${esc(x.notes.join(', '))}</small>` : ''}${oos}</div>
-      <div class="mini"><button data-act="qty" data-key="${esc(x.key)}" data-d="-1" aria-label="Fewer">−</button><span>${x.qty}</span><button data-act="qty" data-key="${esc(x.key)}" data-d="1" aria-label="More">+</button></div>
+      <div class="t"><div class="n">${esc(x.name)}</div>${p ? `<small>${money(p.price)}${PER[p.unit] ? ' ' + PER[p.unit] : ' · ' + esc(p.unit)}${x.qty > 1 ? ` · ${money(p.price * x.qty)}` : ''}</small>` : ''}${p ? `<button class="cheap-sm" data-act="cheaper" data-id="${p.id}">Request cheaper alternative${cheaperFor(p).length ? ` · save up to ${money(p.price - Math.min(...cheaperFor(p).map(q => q.price)))}` : ''}</button>` : ''}${x.notes.length ? `<small>For: ${esc(x.notes.join(', '))}</small>` : ''}${oos}</div>
+      <div class="mini"><button data-act="qty" data-key="${esc(x.key)}" data-d="-1" aria-label="Fewer">−</button><span>${qtyLabel(p, x.qty)}</span><button data-act="qty" data-key="${esc(x.key)}" data-d="1" aria-label="More">+</button></div>
       <button class="rm" data-act="rm" data-key="${esc(x.key)}" aria-label="Remove">✕</button></div>`;
   }).join('')).join('');
   const total = list.reduce((s,x) => s + (x.pid ? byId[x.pid].price * x.qty : 0), 0);
@@ -889,14 +1031,15 @@ function renderList(){
   $('#spendTotal').textContent = money(total);
   $('#spendCount').textContent = units;
   $('#spendSaved').textContent = saved ? `Saving ${money(saved)}` : '';
+  renderBudget(total);
   if (before !== money(total)) { spend.classList.remove('bump'); void spend.offsetWidth; spend.classList.add('bump'); }
   // printable version
   $('#printArea').innerHTML = `<h1>Ganesh Brothers — Shopping list</h1><p>8000 Locust Mill St, Ellicott City, MD · (410) 203-2525 · ${new Date().toLocaleDateString()}</p>` +
-    order.filter(g => groups[g]).map(g => `<h3>${g==='other'?'Other items':esc(catName(g))}</h3><ul>` + groups[g].map(x => `<li>☐ ${x.qty} × ${esc(x.name)}${x.pid ? ` — ${money(byId[x.pid].price * x.qty)}` : ''}</li>`).join('') + '</ul>').join('') +
-    `<p><b>Estimated total: ${money(total)}</b>${saved ? ` (you save ${money(saved)} on specials)` : ''}</p>`;
+    order.filter(g => groups[g]).map(g => `<h3>${g==='other'?'Other items':esc(catName(g))}</h3><ul>` + groups[g].map(x => `<li>☐ ${qtyTimes(x.pid && byId[x.pid], x.qty)} ${esc(x.name)}${x.pid ? ` — ${money(byId[x.pid].price * x.qty)}` : ''}</li>`).join('') + '</ul>').join('') +
+    `<p><b>Estimated total: ${money(total)}</b>${saved ? ` (you save ${money(saved)} on specials)` : ''}${budget ? ` · Budget ${money(budget)} (${total > budget ? money(total - budget) + ' over' : money(budget - total) + ' left'})` : ''}</p>`;
 }
 function listText(){
-  return 'My Ganesh Brothers shopping list\n' + list.map(x => `${x.done?'✓':'☐'} ${x.qty} × ${x.name}`).join('\n') + `\n${$('#total').textContent}`;
+  return 'My Ganesh Brothers shopping list\n' + list.map(x => `${x.done?'✓':'☐'} ${qtyTimes(x.pid && byId[x.pid], x.qty)} ${x.name}`).join('\n') + `\n${$('#total').textContent}`;
 }
 function openList(on){ $('#drawer').classList.toggle('on', on); $('#scrim').classList.toggle('on', on); }
 
@@ -937,6 +1080,7 @@ function openCheckout(){
       <label>Pickup time<select name="pickup">${pickupSlots().map(t => `<option>${esc(t)}</option>`).join('')}</select></label>
       <label>Notes for the store <textarea name="notes" maxlength="300" placeholder="e.g. ripe mangoes please, or call if something is sold out"></textarea></label>
       <div class="sum"><span>${list.length} items · ${units} packs</span><span>${money(total)}</span></div>
+      ${budget && total > budget ? `<div class="sum over"><span>This order is ${money(total - budget)} over your ${money(budget)} budget</span><button type="button" class="pill sm" data-act="find-savings">Find savings</button></div>` : ''}
       <div class="form-err" id="formErr" role="alert"></div>
     </div>
     <div class="dlg-foot"><button class="pill primary" id="placeBtn">Send order</button></div>
@@ -977,7 +1121,7 @@ function openOrder(){
       <small>${o.status === 'ready' ? 'Come to the counter and give your order number.' : o.status === 'cancelled' ? 'This order was cancelled.' : 'This page updates automatically.'}</small></div>
       <button class="x" data-act="close-order" aria-label="Close">×</button></div>
     ${o.status === 'cancelled' ? '' : `<div class="steps2">${steps.map((s, i) => `<div class="${s} ${i <= at ? 'on' : ''}">${STATUS_TEXT[s].replace('!', '')}</div>`).join('')}</div>`}
-    <ul class="ord-list">${o.items.map(i => `<li><b>${i.qty}×</b><span>${esc(i.name)}</span></li>`).join('')}</ul>
+    <ul class="ord-list">${o.items.map(i => `<li><b>${i.unit === 'lb' ? i.qty + ' lb' : i.qty + '×'}</b><span>${esc(i.name)}</span></li>`).join('')}</ul>
     <div class="dlg-foot"><span style="font-weight:600">Estimated total ${money(o.total)}</span>
       ${o.status === 'received' ? '<button class="pill" data-act="cancel-order">Cancel order</button>' : ''}
       <a class="pill" href="#my-orders" data-act="close-order">My orders</a>
@@ -1015,7 +1159,7 @@ const fmtTime = t => new Date(t).toLocaleTimeString([], {hour:'numeric', minute:
 const fmtDate = t => new Date(t).toLocaleDateString([], {weekday:'short', month:'short', day:'numeric'});
 const isActive = o => ['received', 'preparing', 'ready'].includes(o.status);
 function orderItems(o){
-  return `<ul class="mo-items">${o.items.map(i => `<li><b>${i.qty}×</b><span>${esc(i.name)}</span>${i.price ? `<span>${money(i.price * i.qty)}</span>` : '<span></span>'}</li>`).join('')}</ul>`;
+  return `<ul class="mo-items">${o.items.map(i => `<li><b>${i.unit === 'lb' ? i.qty + ' lb' : i.qty + '×'}</b><span>${esc(i.name)}</span>${i.price ? `<span>${money(i.price * i.qty)}</span>` : '<span></span>'}</li>`).join('')}</ul>`;
 }
 function renderMyOrders(){
   const active = myOrders.filter(isActive), past = myOrders.filter(o => !isActive(o));
@@ -1042,12 +1186,15 @@ function renderMyOrders(){
         <button class="pill primary sm" data-act="reorder" data-id="${esc(o.id)}">Order again</button></div></div></details>`).join('')
     : `<div class="mo-empty">Your past orders will show up here.</div>`;
 }
+// Separate pages: #my-orders and #deals. Every other hash scrolls the store page.
 function showView(){
-  const mine = location.hash === '#my-orders', wasMine = $('#top').hidden;
-  $('#top').hidden = mine; $('#myOrdersView').hidden = !mine;
-  if (mine) { scrollTo(0, 0); renderMyOrders(); pollOrders(); }
-  else if (wasMine) { const el = document.getElementById(location.hash.slice(1)); el ? el.scrollIntoView() : scrollTo(0, 0); }
-  navLinks.forEach(a => a.classList.toggle('active', mine ? a.dataset.nav === 'my-orders' : a.dataset.nav === 'top'));
+  const view = {'#my-orders':'my-orders', '#deals':'deals'}[location.hash], wasView = $('#top').hidden;
+  $('#top').hidden = !!view; $('#myOrdersView').hidden = view !== 'my-orders'; $('#dealsView').hidden = view !== 'deals';
+  if (view) scrollTo(0, 0);
+  if (view === 'my-orders') { renderMyOrders(); pollOrders(); }
+  if (view === 'deals') renderDeals();
+  if (!view && wasView) { const el = document.getElementById(location.hash.slice(1)); el ? el.scrollIntoView() : scrollTo(0, 0); }
+  navLinks.forEach(a => a.classList.toggle('active', view ? a.dataset.nav === view : a.dataset.nav === 'top'));
 }
 function reorder(id){
   const o = myOrders.find(x => x.id === id); if (!o) return;
@@ -1073,6 +1220,15 @@ document.addEventListener('click', async e => {
   }
   else if (act === 'cheaper'){ openCheaper(id); }
   else if (act === 'checkout'){ openCheckout(); }
+  else if (act === 'budget-edit'){ budgetEditing = true; renderList(); $('#budgetInput').focus(); }
+  else if (act === 'budget-clear'){ setBudget(''); renderList(); toast('Budget removed'); }
+  else if (act === 'find-savings'){ openSavings(); }
+  else if (act === 'close-savings'){ $('#savingsDlg').close(); }
+  else if (act === 'budget-swap'){
+    const from = byId[b.dataset.from], to = byId[id];
+    swapEntry(from.id, to.id); save(); toast(`Swapped to ${brandName(to)}`);
+    if (listTotal() <= budget) { $('#savingsDlg').close(); toast(`Back under budget — ${money(budget - listTotal())} left`); } else openSavings();
+  }
   else if (act === 'close-checkout'){ $('#checkoutDlg').close(); }
   else if (act === 'open-order'){ location.hash = '#my-orders'; }
   else if (act === 'reorder'){ reorder(id); }
@@ -1093,6 +1249,7 @@ document.addEventListener('click', async e => {
     else { addProduct(id); toast(`Added ${brandName(to)} — ${money(from.price - to.price)} cheaper`); }
     save(); $('#cheapDlg').close();
   }
+  else if (act === 'deal-cat'){ dealState.cat = b.dataset.cat; renderDeals(); }
   else if (act === 'cat'){ state.cat = b.dataset.cat; state.limit = PAGE; renderChips(); renderGrid(); }
   else if (act === 'more'){ state.limit += PAGE; renderGrid(); }
   else if (act === 'scroll'){ const r = $('#specialRow'); r.scrollBy({left: +b.dataset.dir * r.clientWidth * .8, behavior:'smooth'}); }
@@ -1128,31 +1285,35 @@ document.addEventListener('change', e => {
 });
 document.querySelectorAll('[data-tab]').forEach(b => b.addEventListener('click', () => { state.tab = b.dataset.tab; renderSpecials(); $('#specialRow').scrollLeft = 0; }));
 $('#q').addEventListener('input', e => { state.q = e.target.value; state.limit = PAGE; if (state.q && state.cat !== 'all'){ state.cat = 'all'; renderChips(); } renderGrid(); });
+$('#dealSort').addEventListener('change', e => { dealState.sort = e.target.value; renderDeals(); });
 $('#sort').addEventListener('change', e => { state.sort = e.target.value; state.limit = PAGE; renderGrid(); });
 $('#inStock').addEventListener('change', e => { state.inStock = e.target.checked; state.limit = PAGE; renderGrid(); });
 $('#customForm').addEventListener('submit', e => {
   e.preventDefault(); const v = $('#customInput').value.trim(); if (!v) return;
   list.push({key:'c' + Date.now(), pid:null, name:v, qty:1, done:false, notes:[]}); $('#customInput').value = ''; save();
 });
-['#recipeDlg', '#cheapDlg', '#checkoutDlg', '#orderDlg'].forEach(d => $(d).addEventListener('click', e => { if (e.target === e.currentTarget) e.currentTarget.close(); }));
+['#recipeDlg', '#cheapDlg', '#checkoutDlg', '#orderDlg', '#savingsDlg'].forEach(d => $(d).addEventListener('click', e => { if (e.target === e.currentTarget) e.currentTarget.close(); }));
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') openList(false);
   if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('article.recipe')) { e.preventDefault(); openRecipe(e.target.dataset.id); }
 });
-document.addEventListener('submit', e => { if (e.target.id === 'checkoutForm') { e.preventDefault(); placeOrder(e.target); } });
+document.addEventListener('submit', e => {
+  if (e.target.id === 'checkoutForm') { e.preventDefault(); placeOrder(e.target); }
+  if (e.target.id === 'budgetForm') { e.preventDefault(); if (setBudget($('#budgetInput').value)) toast(budget ? `Budget set to ${money(budget)}` : 'Budget removed'); renderList(); }
+});
 
 // Highlight the nav link for the section in view.
 const navLinks = document.querySelectorAll('[data-nav]');
 const navObs = new IntersectionObserver(es => es.forEach(en => {
-  if (!en.isIntersecting || location.hash === '#my-orders') return;
-  const id = en.target.id === 'faq' ? 'visit' : en.target.id;
+  if (!en.isIntersecting || $('#top').hidden) return;
+  const id = en.target.id === 'faq' ? 'visit' : en.target.id === 'specials' ? 'top' : en.target.id;
   navLinks.forEach(a => a.classList.toggle('active', a.dataset.nav === id));
 }), {rootMargin:'-45% 0px -50% 0px'});
 ['top','specials','shop','recipes','visit','faq'].forEach(id => navObs.observe(document.getElementById(id)));
 
 /* ---------- init ---------- */
 renderStatus(); setInterval(renderStatus, 60000);
-renderHeroBits(); renderChips(); renderGrid(); renderSpecials(); renderRecipes(); renderList();
+renderHeroBits(); renderChips(); renderGrid(); renderSpecials(); renderRecipes(); renderList(); renderDeals();
 renderTracker(); renderMyOrders(); pollOrders(); setInterval(pollOrders, 8000);
 addEventListener('hashchange', showView); showView();
 </script>

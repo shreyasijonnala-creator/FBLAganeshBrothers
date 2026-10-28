@@ -18,10 +18,19 @@ const PUBLIC = path.join(__dirname, '..', 'public');
 const DB = process.env.ORDERS_FILE || path.join(__dirname, 'orders.json');
 const TZ = 'America/New_York';
 const SECRET = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
-let PASSWORD = process.env.STAFF_PASSWORD;
-if (!PASSWORD) {
-  PASSWORD = crypto.randomBytes(6).toString('base64url');
-  console.log(`\nNo STAFF_PASSWORD set. Staff password for this run: ${PASSWORD}\n`);
+// The staff password lives in server/staff.json so a change made on the dashboard applies to every staff member
+// and survives restarts. STAFF_PASSWORD only sets the first password, before anyone has changed it.
+// It's stored readable (not hashed) on purpose: signed-in staff can view it on the Settings tab.
+const STAFF_FILE = process.env.STAFF_FILE || path.join(__dirname, 'staff.json');
+let staff;
+try { staff = JSON.parse(fs.readFileSync(STAFF_FILE, 'utf8')); } catch { staff = null; }
+if (!staff || !staff.password) {
+  staff = { password: process.env.STAFF_PASSWORD || crypto.randomBytes(6).toString('base64url'), version: 1, changedAt: null };
+  if (!process.env.STAFF_PASSWORD) console.log(`\nNo STAFF_PASSWORD set. Staff password: ${staff.password}\n`);
+  saveStaff();
+}
+function saveStaff() {
+  fs.writeFileSync(STAFF_FILE + '.tmp', JSON.stringify(staff)); fs.renameSync(STAFF_FILE + '.tmp', STAFF_FILE);
 }
 
 const byId = Object.fromEntries(INVENTORY_ITEMS.map(p => [p.id, p]));
@@ -69,15 +78,16 @@ const sign = v => crypto.createHmac('sha256', SECRET).update(v).digest('base64ur
 function cookies(req) {
   return Object.fromEntries((req.headers.cookie || '').split(';').map(c => c.trim().split('=')).filter(p => p.length === 2));
 }
+// A session is tied to the password version, so changing the password signs everyone else out.
 function isStaff(req) {
   const t = cookies(req).gb_staff; if (!t) return false;
-  const [exp, sig] = t.split('.');
-  return !!exp && !!sig && safeEqual(sig, sign(exp)) && Number(exp) > Date.now();
+  const [exp, ver, sig] = t.split('.');
+  return !!exp && !!sig && safeEqual(sig, sign(exp + '.' + ver)) && Number(exp) > Date.now() && Number(ver) === staff.version;
 }
 function sessionCookie(req) {
-  const exp = String(Date.now() + 12 * 3600e3);
+  const exp = String(Date.now() + 12 * 3600e3), ver = String(staff.version);
   const secure = req.headers['x-forwarded-proto'] === 'https' ? '; Secure' : '';
-  return `gb_staff=${exp}.${sign(exp)}; HttpOnly; SameSite=Strict; Path=/; Max-Age=43200${secure}`;
+  return `gb_staff=${exp}.${ver}.${sign(exp + '.' + ver)}; HttpOnly; SameSite=Strict; Path=/; Max-Age=43200${secure}`;
 }
 
 /* ---------- orders ---------- */
@@ -99,7 +109,7 @@ function buildOrder(body) {
     if (it.pid) {
       const p = byId[it.pid]; if (!p) continue;
       // Prices always come from the server's inventory, never from the browser.
-      items.push({ pid: p.id, name: displayName(p), cat: p.cat, qty, price: p.price, soldOut: p.stock === 'out' });
+      items.push({ pid: p.id, name: displayName(p), cat: p.cat, qty, price: p.price, unit: p.unit || '', soldOut: p.stock === 'out' });
     } else {
       const n = String(it.name || '').trim().slice(0, 80);
       if (n) items.push({ pid: null, name: n, cat: 'other', qty, price: 0 });
@@ -116,7 +126,7 @@ function buildOrder(body) {
 }
 // What a customer may see about their own order.
 const publicView = o => ({ id: o.id, status: o.status, pickup: o.pickup, total: o.total, createdAt: o.createdAt, updatedAt: o.updatedAt,
-  items: o.items.map(i => ({ pid: i.pid, name: i.name, qty: i.qty, price: i.price })), history: o.history.map(h => ({ status: h.status, at: h.at })) });
+  items: o.items.map(i => ({ pid: i.pid, name: i.name, qty: i.qty, price: i.price, unit: i.unit })), history: o.history.map(h => ({ status: h.status, at: h.at })) });
 const staffView = o => { const { token, ...rest } = o; return rest; };
 
 /* ---------- statistics ---------- */
@@ -232,7 +242,7 @@ async function handle(req, res) {
   if (p === '/staff/login' && req.method === 'POST') {
     if (limited('login:' + clientIp(req), 10, 15 * 60e3)) return send(res, 429, { error: 'Too many attempts. Try again in 15 minutes.' });
     let body = {}; try { body = await readJson(req, 2000); } catch {}
-    if (!safeEqual(body.password || '', PASSWORD)) return send(res, 401, { error: 'Wrong password.' });
+    if (!safeEqual(body.password || '', staff.password)) return send(res, 401, { error: 'Wrong password.' });
     return send(res, 200, { ok: true }, undefined, { 'Set-Cookie': sessionCookie(req) });
   }
   if (p === '/staff/logout' && req.method === 'POST') return send(res, 200, { ok: true }, undefined, { 'Set-Cookie': 'gb_staff=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0' });
@@ -250,6 +260,18 @@ async function handle(req, res) {
       if (!STATUS_FLOW[o.status].includes(body.status)) return send(res, 409, { error: `Can't change a ${o.status} order to ${body.status}.` });
       o.status = body.status; o.updatedAt = Date.now(); o.history.push({ status: body.status, at: o.updatedAt }); persist();
       return send(res, 200, staffView(o));
+    }
+    if (p === '/staff/api/password' && req.method === 'GET') return send(res, 200, { password: staff.password, changedAt: staff.changedAt });
+    if (p === '/staff/api/password' && req.method === 'POST') {
+      let body = {}; try { body = await readJson(req, 2000); } catch {}
+      const pw = String(body.password || '');
+      if (pw.length < 6 || pw.length > 64) return send(res, 400, { error: 'Use 6 to 64 characters.' });
+      if (/\s/.test(pw)) return send(res, 400, { error: "Passwords can't contain spaces." });
+      if (pw === staff.password) return send(res, 400, { error: "That's already the password." });
+      staff = { password: pw, version: staff.version + 1, changedAt: Date.now() }; saveStaff();
+      console.log('Staff password changed.');
+      // keep this person signed in; everyone else has to sign in again with the new password
+      return send(res, 200, { password: staff.password, changedAt: staff.changedAt }, undefined, { 'Set-Cookie': sessionCookie(req) });
     }
     if (p === '/staff/api/stats' && req.method === 'GET') return send(res, 200, stats(Number(url.searchParams.get('days')) || 0));
     if (p === '/staff/api/demo/clear' && req.method === 'POST') { orders = orders.filter(o => !o.demo); persist(); return send(res, 200, { ok: true }); }

@@ -14,7 +14,7 @@ STAFF_PASSWORD=choose-a-password npm start      # shop: http://localhost:3000   
 STAFF_PASSWORD=choose-a-password npm run demo   # same, plus 90 sample orders so the statistics have data
 ```
 
-If `STAFF_PASSWORD` isn't set, the server prints a one-time password when it starts.
+`STAFF_PASSWORD` sets the **first** staff password. After that, staff can view and change the password on the dashboard's **Settings** tab. A change applies to every staff member right away, signs everyone else out, and survives restarts (it's saved in `server/staff.json`, which isn't committed). To reset a forgotten password, delete `server/staff.json` and restart with a new `STAFF_PASSWORD`. If no password is set at all, the server prints one when it starts.
 
 ## Folders
 
@@ -25,6 +25,7 @@ If `STAFF_PASSWORD` isn't set, the server prints a one-time password when it sta
 | `server/server.js` | The server: serves `public/`, takes orders, runs the staff dashboard. |
 | `server/staff.html`, `server/login.html` | Staff pages. Served only through `/staff` after signing in — never as public files. |
 | `server/orders.json` | Saved orders (created automatically, not committed). |
+| `server/staff.json` | The current staff password (created automatically, not committed). |
 | `tools/make-art.js` | Draws the product pictures in `public/images/`. Run `npm run art` after editing the inventory. |
 
 ## Hosting

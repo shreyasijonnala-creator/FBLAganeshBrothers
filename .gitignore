@@ -2,3 +2,5 @@
 node_modules/
 server/orders.json
 server/orders.json.tmp
+server/staff.json
+server/staff.json.tmp
