@@ -3,7 +3,7 @@
 // Run from anywhere:  node tools/make-art.js
 // Product pictures come from data/inventory.js via the rules in artFor() near the bottom; edit and re-run.
 const fs = require('fs'), path = require('path');
-const OUT = path.join(__dirname, '..', 'images');
+const OUT = path.join(__dirname, '..', 'public', 'images');
 
 /* ---------- helpers ---------- */
 function shade(hex, a) { // a > 0 lightens toward white, a < 0 darkens
@@ -987,7 +987,7 @@ function artForNew(p, n) {
 }
 
 /* ---------- which drawing each product gets ---------- */
-const { INVENTORY_ITEMS } = require('../data/inventory.js');
+const { INVENTORY_ITEMS } = require('../public/data/inventory.js');
 const hashPick = (str, arr) => { let h = 0; for (const c of str) h = (h * 31 + c.charCodeAt(0)) >>> 0; return arr[h % arr.length]; };
 const firstMatch = (n, rules) => { for (const [re, ...v] of rules) if (re.test(n)) return v; return null; };
 const SNACK_BAGS = ['#D9442E', '#7A3FA0', '#E07B1F', '#2F8F4E', '#C0392B', '#2D6CB5', '#8E2C48', '#B8860B', '#1F7A6B', '#C2185B'];

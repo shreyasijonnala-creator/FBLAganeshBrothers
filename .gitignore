@@ -1,1 +1,4 @@
 .DS_Store
+node_modules/
+server/orders.json
+server/orders.json.tmp

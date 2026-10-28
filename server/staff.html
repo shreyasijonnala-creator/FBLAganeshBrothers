@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Staff Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEEAE8; --surface:#FBF9F8; --surface-2:#F1EDEA; --ink:#141210; --ink-2:#4A4440; --muted:#6F6862; --line:#DDD6D1; --grid:#E6E0DC;
+  --accent:#F27A1A; --accent-ink:#B85000; --btn:#C9520A; --btn-hover:#AE4608; --accent-soft:#FDE7D3; --bar:#D9661A; --dark:#2E2B29;
+  --new:#C9520A; --prep:#8A5A00; --prep-soft:#FFF0C7; --ready:#1F7A4D; --ready-soft:#DDF0E4; --red:#B3261E; --red-soft:#FBE3E0;
+  --shadow:0 18px 30px -22px rgba(60,40,25,.45);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#151311; --surface:#221E1B; --surface-2:#2A2522; --ink:#F5F0EB; --ink-2:#D3CBC3; --muted:#B3AAA2; --line:#3A332E; --grid:#332D29;
+    --accent:#FF8A2B; --accent-ink:#FFA552; --btn:#E8650C; --btn-hover:#FF7A1F; --accent-soft:#3D2614; --bar:#FF9A45; --dark:#0E0C0B;
+    --new:#FFA552; --prep:#F2C25B; --prep-soft:#382A0E; --ready:#5CC291; --ready-soft:#16301F; --red:#F2867D; --red-soft:#3A1A17;
+    --shadow:0 18px 30px -22px rgba(0,0,0,.8);
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 Poppins,system-ui,sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}
+h1,h2{font-family:"Playfair Display",Georgia,serif;margin:0}
+.wrap{max-width:1360px;margin:0 auto;padding:0 16px}
+header{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;gap:18px;height:68px}
+.logo{font-family:"Playfair Display",serif;font-weight:700;font-size:1.4rem;white-space:nowrap}
+.logo em{font-style:normal;color:var(--accent)}
+.tag{font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;background:var(--dark);color:#fff;border-radius:999px;padding:3px 10px}
+.tabs{display:flex;gap:4px;background:var(--surface);border-radius:999px;padding:4px;margin-left:auto}
+.tabs button{border:0;background:none;padding:8px 18px;border-radius:999px;font-weight:500;color:var(--muted)}
+.tabs button[aria-selected="true"]{background:var(--dark);color:#fff}
+.tabs .n{background:var(--btn);color:#fff;border-radius:999px;padding:0 7px;margin-left:6px;font-size:.75rem}
+.ghost{border:1px solid var(--line);background:none;border-radius:999px;padding:8px 16px;color:var(--muted)}
+main{padding:24px 0 60px}
+.live{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:.85rem;margin-bottom:16px}
+.live .dot{width:8px;height:8px;border-radius:50%;background:#2EAD62;box-shadow:0 0 0 4px rgba(46,173,98,.18)}
+.live.off .dot{background:var(--red);box-shadow:none}
+
+/* order board */
+.board{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;align-items:start}
+@media (max-width:1000px){.board{grid-template-columns:1fr}}
+.col{background:var(--surface-2);border-radius:24px;padding:14px;min-height:200px}
+.col h2{font-family:Poppins,sans-serif;font-size:.95rem;font-weight:600;display:flex;align-items:center;gap:8px;margin:2px 4px 12px}
+.col h2 .c{background:var(--surface);border-radius:999px;padding:0 9px;font-size:.8rem;color:var(--muted)}
+.col h2 .sw{width:10px;height:10px;border-radius:50%}
+.empty{color:var(--muted);text-align:center;padding:30px 10px;font-size:.88rem}
+.order{background:var(--surface);border-radius:20px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow);border-left:5px solid transparent}
+.order.received{border-left-color:var(--new)}
+.order.preparing{border-left-color:var(--prep)}
+.order.ready{border-left-color:var(--ready)}
+.order.fresh{animation:flash 1.2s 3}
+@keyframes flash{50%{box-shadow:0 0 0 4px var(--accent-soft)}}
+.o-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.o-id{font-weight:600;font-size:1.05rem;letter-spacing:.02em}
+.o-time{color:var(--muted);font-size:.8rem;white-space:nowrap}
+.o-who{margin:4px 0 2px;font-weight:500}
+.o-who a{color:var(--accent-ink)}
+.o-meta{color:var(--muted);font-size:.82rem}
+.o-notes{background:var(--accent-soft);border-radius:10px;padding:6px 10px;margin-top:8px;font-size:.84rem}
+.o-items{list-style:none;margin:10px 0 0;padding:0;border-top:1px solid var(--line)}
+.o-items li{display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line);font-size:.88rem}
+.o-items input{width:16px;height:16px;accent-color:var(--ready);flex:none}
+.o-items .q{font-weight:600;min-width:28px}
+.o-items .nm{flex:1}
+.o-items li.got .nm{text-decoration:line-through;color:var(--muted)}
+.o-items .so{font-size:.7rem;font-weight:600;color:var(--red);background:var(--red-soft);border-radius:999px;padding:1px 7px}
+.o-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap}
+.o-total{font-weight:600}
+.o-actions{display:flex;gap:6px}
+.act{border:0;border-radius:999px;padding:8px 14px;font-weight:500;background:var(--btn);color:#fff}
+.act:hover{background:var(--btn-hover)}
+.act.sec{background:var(--surface-2);color:var(--ink-2)}
+.act.green{background:var(--ready)}
+.history{margin-top:30px}
+.history h2{font-size:1.4rem;margin-bottom:12px}
+.hist-row{display:grid;grid-template-columns:110px 1fr 140px 90px 110px;gap:12px;padding:10px 14px;background:var(--surface);border-radius:14px;margin-bottom:6px;align-items:center;font-size:.86rem}
+.hist-row .st{font-weight:600;font-size:.75rem;text-transform:uppercase;letter-spacing:.05em}
+.hist-row .st.cancelled{color:var(--red)}
+.hist-row .st.picked-up{color:var(--ready)}
+@media (max-width:700px){.hist-row{grid-template-columns:1fr 1fr}}
+
+/* statistics */
+.stats-head{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+.seg{display:inline-flex;background:var(--surface);border-radius:999px;padding:4px}
+.seg button{border:0;background:none;padding:7px 16px;border-radius:999px;color:var(--muted);font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--dark);color:#fff}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:20px}
+.kpi{background:var(--surface);border-radius:20px;padding:16px 18px;box-shadow:var(--shadow)}
+.kpi small{display:block;color:var(--muted);font-size:.78rem}
+.kpi b{display:block;font-size:1.7rem;font-weight:600;line-height:1.25;font-variant-numeric:tabular-nums}
+.kpi span{font-size:.78rem;color:var(--muted)}
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:1000px){.charts{grid-template-columns:1fr}}
+.card{background:var(--surface);border-radius:24px;padding:20px 22px;box-shadow:var(--shadow)}
+.card h3{margin:0;font-size:1rem;font-weight:600}
+.card .sub{color:var(--muted);font-size:.8rem;margin:2px 0 16px}
+.hbar{display:grid;grid-template-columns:minmax(120px,38%) 1fr;gap:10px;align-items:center;padding:4px 0;border-radius:8px}
+.hbar:hover{background:var(--surface-2)}
+.hbar .lab{font-size:.84rem;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hbar .track{display:flex;align-items:center;gap:8px}
+.hbar .fill{height:14px;background:var(--bar);border-radius:0 4px 4px 0;min-width:2px}
+.hbar .val{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.vbars{display:flex;align-items:flex-end;gap:2px;height:170px;border-bottom:1px solid var(--grid);background:repeating-linear-gradient(to top,var(--grid) 0 1px,transparent 1px 42.5px)}
+.vbars .b{flex:1;display:flex;align-items:flex-end;height:100%;padding:0 2px}
+.vbars .b i{display:block;width:100%;background:var(--bar);border-radius:4px 4px 0 0;min-height:1px}
+.vbars .b:hover i{filter:brightness(1.12)}
+.vlabels{display:flex;gap:2px;margin-top:6px}
+.vlabels span{flex:1;text-align:center;font-size:.72rem;color:var(--muted)}
+.pairs{list-style:none;margin:0;padding:0}
+.pairs li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:.86rem}
+.pairs li span:last-child{color:var(--muted);white-space:nowrap}
+details.tbl{margin-top:12px;font-size:.8rem;color:var(--muted)}
+details.tbl summary{cursor:pointer}
+details.tbl table{width:100%;border-collapse:collapse;margin-top:8px;color:var(--ink-2)}
+details.tbl td,details.tbl th{text-align:left;padding:4px 6px;border-bottom:1px solid var(--line)}
+details.tbl td:last-child,details.tbl th:last-child{text-align:right}
+.tip{position:fixed;pointer-events:none;background:var(--dark);color:#fff;border-radius:10px;padding:6px 10px;font-size:.8rem;z-index:50;opacity:0;transition:opacity .1s;max-width:260px}
+.tip.on{opacity:1}
+.note{color:var(--muted);font-size:.8rem;margin-top:22px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,120px);background:var(--dark);color:#fff;padding:12px 22px;border-radius:999px;z-index:60;transition:transform .25s}
+.toast.on{transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <span class="logo">Ganesh <em>Brothers</em></span><span class="tag">Staff</span>
+    <nav class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-tab="orders">Orders<span class="n" id="newCount" hidden></span></button>
+      <button role="tab" aria-selected="false" data-tab="stats">Statistics</button>
+    </nav>
+    <a class="ghost" href="/" style="text-decoration:none">← Back to store</a>
+    <button class="ghost" id="logout">Sign out</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="orders">
+    <div class="live" id="live"><span class="dot"></span><span id="liveText">Live · updates every 5 seconds</span></div>
+    <div class="board">
+      <div class="col"><h2><span class="sw" style="background:var(--new)"></span>New<span class="c" id="c-received">0</span></h2><div id="received"></div></div>
+      <div class="col"><h2><span class="sw" style="background:var(--prep)"></span>Preparing<span class="c" id="c-preparing">0</span></h2><div id="preparing"></div></div>
+      <div class="col"><h2><span class="sw" style="background:var(--ready)"></span>Ready for pickup<span class="c" id="c-ready">0</span></h2><div id="ready"></div></div>
+    </div>
+    <div class="history">
+      <h2>Completed &amp; cancelled</h2>
+      <div id="history"></div>
+    </div>
+  </section>
+
+  <section id="stats" hidden>
+    <div class="stats-head">
+      <h2 style="font-size:1.8rem">Store statistics</h2>
+      <div class="seg" role="group" aria-label="Time range">
+        <button data-days="7" aria-pressed="false">7 days</button>
+        <button data-days="30" aria-pressed="true">30 days</button>
+        <button data-days="0" aria-pressed="false">All time</button>
+      </div>
+    </div>
+    <div class="kpis" id="kpis"></div>
+    <div class="charts">
+      <div class="card"><h3>Most frequently ordered</h3><p class="sub">Top 10 products by units ordered</p><div id="topProducts"></div></div>
+      <div class="card"><h3>Busiest aisles</h3><p class="sub">Units ordered by aisle</p><div id="topCategories"></div></div>
+      <div class="card"><h3>Orders by hour</h3><p class="sub">When customers send pickup orders (store time)</p><div id="byHour"></div></div>
+      <div class="card"><h3>Orders by day of week</h3><p class="sub">Which days are busiest</p><div id="byDay"></div></div>
+      <div class="card" style="grid-column:1/-1"><h3>Often bought together</h3><p class="sub">Product pairs that appear in the same order — ideas for shelf placement and combo deals</p><ul class="pairs" id="pairs"></ul></div>
+    </div>
+    <div class="note"><span>Revenue is estimated from list prices and excludes cancelled orders.</span><button class="ghost" id="clearDemo" hidden>Remove demo orders</button></div>
+  </section>
+</main>
+<div class="tip" id="tip" role="tooltip"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const money = n => Number(n).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+const ago = t => { const m = Math.round((Date.now() - t) / 60000); return m < 1 ? 'just now' : m < 60 ? `${m} min ago` : m < 1440 ? `${Math.round(m / 60)} h ago` : new Date(t).toLocaleDateString(); };
+const clock = t => new Date(t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+let toastT;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 2400); }
+async function api(url, opts = {}) {
+  const r = await fetch(url, { ...opts, headers: { 'Content-Type': 'application/json' } });
+  if (r.status === 401) { location.reload(); throw new Error('signed out'); }
+  const data = await r.json();
+  if (!r.ok) throw new Error(data.error || 'Request failed');
+  return data;
+}
+
+/* ---------- orders ---------- */
+let known = null, picked = {};
+const NEXT = { received: [['preparing', 'Start preparing', ''], ['cancelled', 'Cancel', 'sec']], preparing: [['ready', 'Mark ready', 'green']], ready: [['picked-up', 'Picked up', 'green']] };
+function orderCard(o, fresh) {
+  const got = picked[o.id] || {};
+  const items = o.items.map((i, n) => `<li class="${got[n] ? 'got' : ''}"><input type="checkbox" data-pick="${o.id}" data-n="${n}" ${got[n] ? 'checked' : ''} aria-label="Picked ${esc(i.name)}">
+    <span class="q">${i.qty}×</span><span class="nm">${esc(i.name)}</span>${i.soldOut ? '<span class="so">Sold out</span>' : ''}</li>`).join('');
+  const actions = (NEXT[o.status] || []).map(([s, label, cls]) => `<button class="act ${cls}" data-id="${o.id}" data-status="${s}">${label}</button>`).join('');
+  return `<article class="order ${o.status} ${fresh ? 'fresh' : ''}">
+    <div class="o-top"><span class="o-id">${esc(o.id)}</span><span class="o-time" title="${new Date(o.createdAt).toLocaleString()}">${ago(o.createdAt)}</span></div>
+    <div class="o-who">${esc(o.name)} · <a href="tel:${esc(o.phone)}">${esc(o.phone)}</a></div>
+    <div class="o-meta">Pickup: ${esc(o.pickup)} · ${o.items.length} item${o.items.length === 1 ? '' : 's'}</div>
+    ${o.notes ? `<div class="o-notes">“${esc(o.notes)}”</div>` : ''}
+    <ul class="o-items">${items}</ul>
+    <div class="o-foot"><span class="o-total">${money(o.total)}</span><div class="o-actions">${actions}</div></div>
+  </article>`;
+}
+async function loadOrders() {
+  let list;
+  try { list = await api('/staff/api/orders'); $('#live').classList.remove('off'); $('#liveText').textContent = `Live · updated ${clock(Date.now())}`; }
+  catch (e) { $('#live').classList.add('off'); $('#liveText').textContent = 'Connection lost — retrying…'; return; }
+  const ids = new Set(list.map(o => o.id));
+  const fresh = known ? list.filter(o => o.status === 'received' && !known.has(o.id)) : [];
+  if (fresh.length) { chime(); toast(`New order ${fresh[0].id} from ${fresh[0].name}`); }
+  for (const s of ['received', 'preparing', 'ready']) {
+    const col = list.filter(o => o.status === s).sort((a, b) => a.createdAt - b.createdAt);
+    $('#c-' + s).textContent = col.length;
+    $('#' + s).innerHTML = col.length ? col.map(o => orderCard(o, fresh.includes(o))).join('') : `<div class="empty">No ${s === 'received' ? 'new' : s} orders</div>`;
+  }
+  const done = list.filter(o => ['picked-up', 'cancelled'].includes(o.status)).slice(0, 30);
+  $('#history').innerHTML = done.length ? done.map(o => `<div class="hist-row"><b>${esc(o.id)}</b><span>${esc(o.name)} · ${o.items.length} items</span>
+    <span>${new Date(o.updatedAt).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span><span>${money(o.total)}</span><span class="st ${o.status}">${o.status.replace('-', ' ')}</span></div>`).join('')
+    : '<div class="empty">Nothing yet.</div>';
+  const n = list.filter(o => o.status === 'received').length;
+  $('#newCount').hidden = !n; $('#newCount').textContent = n;
+  document.title = n ? `(${n}) New orders · Staff` : 'Staff Dashboard';
+  known = ids;
+}
+function chime() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [660, 880].forEach((f, i) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.value = f; o.connect(g); g.connect(ctx.destination);
+      g.gain.setValueAtTime(.15, ctx.currentTime + i * .18); g.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + i * .18 + .3); o.start(ctx.currentTime + i * .18); o.stop(ctx.currentTime + i * .18 + .3); });
+  } catch {}
+}
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-status]'); if (!b) return;
+  if (b.dataset.status === 'cancelled' && !confirm(`Cancel order ${b.dataset.id}?`)) return;
+  b.disabled = true;
+  try { await api(`/staff/api/orders/${b.dataset.id}/status`, { method: 'POST', body: JSON.stringify({ status: b.dataset.status }) }); await loadOrders(); toast(`${b.dataset.id} → ${b.textContent}`); }
+  catch (err) { toast(err.message); b.disabled = false; }
+});
+document.addEventListener('change', e => {
+  const c = e.target.closest('[data-pick]'); if (!c) return;
+  (picked[c.dataset.pick] = picked[c.dataset.pick] || {})[c.dataset.n] = c.checked;
+  c.closest('li').classList.toggle('got', c.checked);
+});
+
+/* ---------- statistics ---------- */
+let days = 30;
+function hbars(rows, unit) {
+  const max = Math.max(1, ...rows.map(r => r.value));
+  return rows.map(r => `<div class="hbar" data-tip="${esc(r.label)} — ${r.value} ${unit}${r.extra ? ' · ' + esc(r.extra) : ''}">
+    <span class="lab">${esc(r.label)}</span><span class="track"><span class="fill" style="width:${(r.value / max * 82).toFixed(1)}%"></span><span class="val">${r.value}</span></span></div>`).join('')
+    + table(rows.map(r => [r.label, r.value]), ['Item', unit]);
+}
+function vbars(values, labels, tips) {
+  const max = Math.max(1, ...values);
+  return `<div class="vbars">${values.map((v, i) => `<div class="b" data-tip="${esc(tips[i])}: ${v} order${v === 1 ? '' : 's'}"><i style="height:${(v / max * 100).toFixed(1)}%"></i></div>`).join('')}</div>
+    <div class="vlabels">${labels.map(l => `<span>${l}</span>`).join('')}</div>` + table(values.map((v, i) => [tips[i], v]), ['', 'Orders']);
+}
+const table = (rows, head) => `<details class="tbl"><summary>View as table</summary><table><thead><tr>${head.map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead>
+  <tbody>${rows.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></details>`;
+const hourName = h => `${h % 12 || 12}${h < 12 ? 'am' : 'pm'}`;
+async function loadStats() {
+  let s; try { s = await api('/staff/api/stats?days=' + days); } catch (e) { toast(e.message); return; }
+  const k = s.kpis;
+  $('#clearDemo').hidden = !k.demoOrders;
+  $('#kpis').innerHTML = [
+    ['Orders', k.orders, k.cancelled ? `${k.cancelled} cancelled` : 'none cancelled'],
+    ['Revenue (est.)', money(k.revenue), 'from pickup orders'],
+    ['Average order', money(k.avgOrder), 'per order'],
+    ['Avg. time to ready', k.avgPrepMinutes == null ? '—' : k.avgPrepMinutes + ' min', 'received → ready'],
+    ['Customers', k.customers, `${k.returningCustomers} ordered more than once`],
+    ['Today', k.ordersToday, `${k.openOrders} open right now`],
+  ].map(([l, v, sub]) => `<div class="kpi"><small>${l}</small><b>${v}</b><span>${sub}</span></div>`).join('');
+  $('#topProducts').innerHTML = s.topProducts.length ? hbars(s.topProducts.map(p => ({ label: p.name, value: p.units, extra: `in ${p.orders} orders` })), 'units') : '<div class="empty">No orders in this range.</div>';
+  $('#topCategories').innerHTML = s.topCategories.length ? hbars(s.topCategories.map(c => ({ label: c.name, value: c.units })), 'units') : '<div class="empty">No orders in this range.</div>';
+  const hours = Array.from({ length: 14 }, (_, i) => i + 8);
+  $('#byHour').innerHTML = vbars(hours.map(h => s.byHour[h]), hours.map(h => h % 2 ? '' : hourName(h)), hours.map(hourName));
+  const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  $('#byDay').innerHTML = vbars(dayNames.map(d => s.byDay[d]), dayNames, dayNames);
+  $('#pairs').innerHTML = s.boughtTogether.length ? s.boughtTogether.map(p => `<li><span>${esc(p.items[0])} + ${esc(p.items[1])}</span><span>${p.orders} orders</span></li>`).join('')
+    : '<li><span>Not enough orders yet.</span><span></span></li>';
+}
+document.querySelectorAll('[data-days]').forEach(b => b.addEventListener('click', () => {
+  days = +b.dataset.days; document.querySelectorAll('[data-days]').forEach(x => x.setAttribute('aria-pressed', x === b)); loadStats();
+}));
+
+/* ---------- tooltip ---------- */
+const tip = $('#tip');
+document.addEventListener('mousemove', e => {
+  const t = e.target.closest('[data-tip]');
+  if (!t) return tip.classList.remove('on');
+  tip.textContent = t.dataset.tip; tip.classList.add('on');
+  tip.style.left = Math.min(e.clientX + 14, innerWidth - tip.offsetWidth - 8) + 'px'; tip.style.top = (e.clientY + 14) + 'px';
+});
+
+/* ---------- tabs, sign out, demo ---------- */
+document.querySelectorAll('[data-tab]').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('[data-tab]').forEach(x => x.setAttribute('aria-selected', x === b));
+  $('#orders').hidden = b.dataset.tab !== 'orders'; $('#stats').hidden = b.dataset.tab !== 'stats';
+  if (b.dataset.tab === 'stats') loadStats();
+  history.replaceState(null, '', b.dataset.tab === 'stats' ? '#stats' : '#');
+}));
+if (location.hash === '#stats') document.querySelector('[data-tab=stats]').click();
+$('#logout').addEventListener('click', async () => { await fetch('/staff/logout', { method: 'POST' }); location.reload(); });
+$('#clearDemo').addEventListener('click', async () => { if (confirm('Remove all demo orders?')) { await api('/staff/api/demo/clear', { method: 'POST' }); loadOrders(); loadStats(); } });
+
+
+loadOrders(); setInterval(loadOrders, 5000);
+</script>
+</body>
+</html>
