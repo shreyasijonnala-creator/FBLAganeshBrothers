@@ -514,50 +514,6 @@ function recipeArt(id) {
   }
 }
 
-/* ---------- hero: top-down thali (square, transparent background) ---------- */
-function heroThali() {
-  const katori = (cx, cy, r, col, inner) => {
-    const id = UID + 'k' + cx;
-    return `<circle cx="${cx + 4}" cy="${cy + 8}" r="${r}" fill="#2a2018" opacity=".16"/>` +
-      `<circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#steel)" stroke="#97A1AC" stroke-width="2"/>` +
-      `<circle cx="${cx}" cy="${cy}" r="${r - 10}" fill="${col}" stroke="#A9B2BC" stroke-width="2"/>` +
-      `<clipPath id="${id}"><circle cx="${cx}" cy="${cy}" r="${r - 11}"/></clipPath><g clip-path="url(#${id})">${inner}</g>` +
-      `<path d="M${cx - r + 5} ${cy - 6} A${r - 5} ${r - 5} 0 0 1 ${cx - 6} ${cy - r + 5}" stroke="#fff" stroke-width="4" fill="none" opacity=".7" stroke-linecap="round"/>`;
-  };
-  const inC = (n, cx, cy, r) => ellPts(n, cx, cy, r, r);
-  const herbs = (n, cx, cy, r) => inC(n, cx, cy, r).map(([x, y]) =>
-    [[-3, 0], [3, 0], [0, -3]].map(([a, b]) => `<circle cx="${f(x + a)}" cy="${f(y + b)}" r="3.4" fill="#3F8F3A"/>`).join('')).join('');
-  const roti = (x, y, r, rot) => G(`rotate(${rot} ${x} ${y})`,
-    `<path d="M${x - r} ${y} A${r} ${r} 0 0 1 ${x + r} ${y} Z" fill="#E6C084" stroke="#C99A55" stroke-width="2.5"/>` +
-    Array.from({ length: 9 }, () => `<ellipse cx="${f(x + rand(-r * .7, r * .7))}" cy="${f(y - rand(6, r * .6))}" rx="${f(rand(3, 7))}" ry="${f(rand(2, 4))}" fill="#A8692E" opacity=".45"/>`).join(''));
-  let s = `<defs><radialGradient id="plate" cx=".42" cy=".36" r=".72"><stop offset="0" stop-color="#F1F3F6"/><stop offset=".86" stop-color="#C8CFD8"/><stop offset="1" stop-color="#A9B3BE"/></radialGradient>` +
-    `<radialGradient id="steel" cx=".38" cy=".32" r=".8"><stop offset="0" stop-color="#F2F4F6"/><stop offset="1" stop-color="#AEB8C3"/></radialGradient></defs>` +
-    `<circle cx="300" cy="300" r="292" fill="url(#plate)" stroke="#97A1AC" stroke-width="3"/>` +
-    `<circle cx="300" cy="300" r="250" fill="none" stroke="#B7C0CA" stroke-width="3"/>` +
-    `<path d="M88 220 A228 228 0 0 1 220 82" stroke="#fff" stroke-width="10" fill="none" opacity=".55" stroke-linecap="round"/>`;
-  s += roti(150, 400, 74, -28) + roti(176, 438, 70, -6);
-  s += `<circle cx="232" cy="512" r="56" fill="#EFD8A0" stroke="#D6B66E" stroke-width="2"/>` +
-    inC(26, 232, 512, 46).map(([x, y]) => `<circle cx="${f(x)}" cy="${f(y)}" r="1.8" fill="#3a2a1a"/>`).join('') +
-    inC(10, 232, 512, 42).map(([x, y]) => `<circle cx="${f(x)}" cy="${f(y)}" r="${f(rand(4, 8))}" fill="#F8E8BE"/>`).join('');
-  s += `<ellipse cx="312" cy="398" rx="92" ry="66" fill="#E9E0CB"/>` +
-    ellPts(240, 312, 394, 88, 60).map(([x, y]) => piece('grain', x, y, R() < .85 ? '#FBF7EE' : '#F2D58A')).join('') + herbs(5, 312, 380, 40);
-  s += katori(178, 186, 80, '#E8B33A',
-    `<path d="M128 180 Q178 150 232 186" stroke="#D9822B" stroke-width="8" fill="none" opacity=".7"/>` +
-    inC(16, 178, 186, 58).map(([x, y]) => piece('oval', x, y, '#5B3A1E')).join('') + herbs(5, 178, 186, 50));
-  s += katori(334, 120, 72, '#3F7A2C', inC(9, 334, 120, 46).map(([x, y]) => piece('cube', x, y, '#F7F1E3', rand(-20, 20))).join('') +
-    `<path d="M312 120 c8 -10 34 -10 42 0 c-8 8 -28 8 -32 0" stroke="#FFF8EC" stroke-width="3.5" fill="none" stroke-linecap="round"/>`);
-  s += katori(462, 228, 74, '#B4562C', inC(16, 462, 228, 52).map(([x, y]) => piece('chickpea', x, y, '#E2B670')).join('') + herbs(4, 462, 228, 44));
-  s += katori(474, 384, 56, '#F4F1EA', inC(14, 474, 384, 38).map(([x, y]) => `<rect x="${f(x - 3)}" y="${f(y - 3)}" width="6" height="6" rx="1" fill="#8DBF5A"/>`).join('') +
-    inC(18, 474, 384, 38).map(([x, y]) => `<circle cx="${f(x)}" cy="${f(y)}" r="1.3" fill="#C9341F"/>`).join(''));
-  s += katori(392, 506, 50, '#E3A140', `<circle cx="380" cy="500" r="17" fill="#7A3418"/><circle cx="374" cy="494" r="5" fill="#B0602E" opacity=".7"/>` +
-    `<circle cx="404" cy="514" r="16" fill="#7A3418"/><circle cx="398" cy="508" r="5" fill="#B0602E" opacity=".7"/>`);
-  s += `<path d="M282 262 C296 248 326 252 330 270 C334 288 300 296 286 286 C276 280 276 268 282 262 Z" fill="#C2401C"/>` +
-    [[292, 268], [310, 262], [318, 278], [298, 282]].map(([x, y]) => `<rect x="${x}" y="${y}" width="9" height="7" rx="2" fill="#E9B44C"/>`).join('');
-  s += G('translate(214 300) rotate(-24) scale(.55)', `<path d="M0 -10 C45 -15 108 -8 142 22 C102 6 45 10 0 10 Z" fill="#3E8E2F"/><ellipse cx="-2" cy="0" rx="8" ry="11" fill="#2F6E2A"/>`);
-  s += G('translate(520 300)', `<path d="M-26 0 A26 26 0 0 1 26 0 Z" fill="#F5CF2E" stroke="#CFA80F" stroke-width="2"/><path d="M-20 -2 A20 20 0 0 1 20 -2 Z" fill="#FBE58B"/>`);
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600">${s}</svg>`;
-}
-
 /* ---------- juice bottles ---------- */
 function juiceBottle(col, label) {
   const body = 'M178 62 L222 62 L222 92 C252 104 262 124 262 150 L262 242 Q262 256 248 256 L152 256 Q138 256 138 242 L138 150 C138 124 148 104 178 92 Z';
@@ -1097,7 +1053,6 @@ function artFor(p) {
 // Products with a photo (photo: in the inventory) don't need a drawing.
 const ART = Object.fromEntries(INVENTORY_ITEMS.filter(p => !p.photo).map(p => [p.id, () => artFor(p)]));
 for (const r of ['dal', 'chana', 'biryani', 'palak', 'sambar', 'chai', 'aloogobi', 'lassi', 'rajma', 'pavbhaji', 'bhindi', 'lemonrice', 'gj', 'poha', 'upma', 'kheer']) ART['r-' + r] = () => dish(r);
-ART['hero-thali'] = () => heroThali();
 
 fs.mkdirSync(OUT, { recursive: true });
 for (const f of fs.readdirSync(OUT)) if (f.endsWith('.svg')) fs.unlinkSync(path.join(OUT, f));

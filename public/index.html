@@ -90,9 +90,27 @@ nav.main a:hover,nav.main a.active{color:var(--accent-ink)}
 .status.open .dot{background:#2EAD62;box-shadow:0 0 0 4px rgba(46,173,98,.18)}
 .status b{color:var(--ink);font-weight:600}
 .hero-art{position:relative;aspect-ratio:1;max-width:560px;width:100%;justify-self:center}
-.thali{width:100%;height:100%;display:block;filter:drop-shadow(0 34px 40px rgba(40,30,20,.28));animation:spin 120s linear infinite}
-@keyframes spin{to{rotate:360deg}}
-@media (prefers-reduced-motion:reduce){.thali{animation:none}}
+.bagart{width:100%;height:100%;display:block;overflow:visible;filter:drop-shadow(0 30px 34px rgba(40,30,20,.25))}
+.bagart .it{transform-box:fill-box;transform-origin:50% 100%;opacity:0}
+.bagart .bagbody{transform-box:fill-box;transform-origin:50% 100%;animation:gbbag 10s linear infinite}
+@keyframes gb1{0%,1%{opacity:0;transform:translateY(-300px) rotate(-10deg);animation-timing-function:cubic-bezier(.55,0,1,.45)}4%{opacity:1}8%{transform:translateY(0) rotate(0);animation-timing-function:ease-out}10%{transform:translateY(-18px)}12%,86%{opacity:1;transform:translateY(0)}94%,100%{opacity:0;transform:translateY(30px)}}
+.bagart .it:nth-of-type(1){animation:gb1 10s infinite}
+@keyframes gb2{0%,9%{opacity:0;transform:translateY(-300px) rotate(10deg);animation-timing-function:cubic-bezier(.55,0,1,.45)}12%{opacity:1}16%{transform:translateY(0) rotate(0);animation-timing-function:ease-out}18%{transform:translateY(-18px)}20%,86%{opacity:1;transform:translateY(0)}94%,100%{opacity:0;transform:translateY(30px)}}
+.bagart .it:nth-of-type(2){animation:gb2 10s infinite}
+@keyframes gb3{0%,17%{opacity:0;transform:translateY(-300px) rotate(-10deg);animation-timing-function:cubic-bezier(.55,0,1,.45)}20%{opacity:1}24%{transform:translateY(0) rotate(0);animation-timing-function:ease-out}26%{transform:translateY(-18px)}28%,86%{opacity:1;transform:translateY(0)}94%,100%{opacity:0;transform:translateY(30px)}}
+.bagart .it:nth-of-type(3){animation:gb3 10s infinite}
+@keyframes gb4{0%,25%{opacity:0;transform:translateY(-300px) rotate(10deg);animation-timing-function:cubic-bezier(.55,0,1,.45)}28%{opacity:1}32%{transform:translateY(0) rotate(0);animation-timing-function:ease-out}34%{transform:translateY(-18px)}36%,86%{opacity:1;transform:translateY(0)}94%,100%{opacity:0;transform:translateY(30px)}}
+.bagart .it:nth-of-type(4){animation:gb4 10s infinite}
+@keyframes gb5{0%,33%{opacity:0;transform:translateY(-300px) rotate(-10deg);animation-timing-function:cubic-bezier(.55,0,1,.45)}36%{opacity:1}40%{transform:translateY(0) rotate(0);animation-timing-function:ease-out}42%{transform:translateY(-18px)}44%,86%{opacity:1;transform:translateY(0)}94%,100%{opacity:0;transform:translateY(30px)}}
+.bagart .it:nth-of-type(5){animation:gb5 10s infinite}
+@keyframes gb6{0%,40%{opacity:0;transform:translateY(-300px) rotate(10deg);animation-timing-function:cubic-bezier(.55,0,1,.45)}43%{opacity:1}47%{transform:translateY(0) rotate(0);animation-timing-function:ease-out}49%{transform:translateY(-18px)}51%,86%{opacity:1;transform:translateY(0)}94%,100%{opacity:0;transform:translateY(30px)}}
+.bagart .it:nth-of-type(6){animation:gb6 10s infinite}
+@keyframes gb7{0%,47%{opacity:0;transform:translateY(-300px) rotate(-10deg);animation-timing-function:cubic-bezier(.55,0,1,.45)}50%{opacity:1}54%{transform:translateY(0) rotate(0);animation-timing-function:ease-out}56%{transform:translateY(-18px)}58%,86%{opacity:1;transform:translateY(0)}94%,100%{opacity:0;transform:translateY(30px)}}
+.bagart .it:nth-of-type(7){animation:gb7 10s infinite}
+@keyframes gb8{0%,54%{opacity:0;transform:translateY(-300px) rotate(10deg);animation-timing-function:cubic-bezier(.55,0,1,.45)}57%{opacity:1}61%{transform:translateY(0) rotate(0);animation-timing-function:ease-out}63%{transform:translateY(-18px)}65%,86%{opacity:1;transform:translateY(0)}94%,100%{opacity:0;transform:translateY(30px)}}
+.bagart .it:nth-of-type(8){animation:gb8 10s infinite}
+@keyframes gbbag{0%,10%,18%,26%,34%,42%,49%,56%,63%,100%{transform:scale(1)}8%,16%,24%,32%,40%,47%,54%,61%{transform:scale(1.035,.965)}}
+@media (prefers-reduced-motion:reduce){.bagart .it,.bagart .bagbody{animation:none;opacity:1;transform:none}}
 .deal{position:absolute;top:6%;left:-4%;background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(8px);border-radius:16px;padding:16px 20px 14px;box-shadow:0 20px 40px -18px rgba(0,0,0,.35);text-decoration:none;display:block;min-width:170px}
 .deal .ic{position:absolute;top:-18px;right:18px;width:36px;height:36px;border-radius:50%;background:var(--surface);display:grid;place-items:center;box-shadow:0 6px 14px -6px rgba(0,0,0,.4);color:var(--accent-ink)}
 .deal b{font-size:1.5rem;font-weight:600;display:block;line-height:1.1}
@@ -460,10 +478,43 @@ a.bag{color:inherit}
         </div>
       </div>
       <div class="hero-art">
-        <img class="thali" src="images/hero-thali.svg" alt="A steel thali with dal, palak paneer, chana, raita, rice, roti and gulab jamun">
+        <svg class="bagart" viewBox="0 0 600 600" role="img" aria-label="A Ganesh Brothers grocery bag filling up with rice, mango lassi, cilantro, bananas, eggplant, tomato, onion and green chilies">
+  <defs>
+    <linearGradient id="kraft" x1="0" x2="1"><stop offset="0" stop-color="#D7A469"/><stop offset=".55" stop-color="#E3B57C"/><stop offset="1" stop-color="#C08549"/></linearGradient>
+    <linearGradient id="kraftIn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9C6834"/><stop offset="1" stop-color="#6E4520"/></linearGradient>
+    <radialGradient id="tom" cx=".35" cy=".35" r=".7"><stop offset="0" stop-color="#FF7A5C"/><stop offset="1" stop-color="#C9241A"/></radialGradient>
+    <radialGradient id="egg" cx=".3" cy=".3" r=".8"><stop offset="0" stop-color="#8A4AA0"/><stop offset="1" stop-color="#3E1A4C"/></radialGradient>
+    <radialGradient id="oni" cx=".35" cy=".35" r=".7"><stop offset="0" stop-color="#D681AE"/><stop offset="1" stop-color="#8A2F62"/></radialGradient>
+    <linearGradient id="lassi" x1="0" x2="1"><stop offset="0" stop-color="#F7C24A"/><stop offset=".4" stop-color="#FFD978"/><stop offset="1" stop-color="#E29A1E"/></linearGradient>
+  </defs>
+  <ellipse cx="300" cy="556" rx="190" ry="20" fill="#2a1a0c" opacity=".16"/>
+  <g class="bagbody">
+    <path d="M214 236 C214 112 386 112 386 236" fill="none" stroke="#8A5A2B" stroke-width="9" stroke-linecap="round"/>
+    <path d="M150 262 L168 230 L432 230 L450 262 Z" fill="url(#kraftIn)"/>
+    <g class="items">
+      <g class="it"><rect x="200" y="150" width="104" height="190" rx="10" fill="#FBF6EA" stroke="#D9CBB0" stroke-width="2"/><path d="M200 160 l13 -12 l13 12 l13 -12 l13 12 l13 -12 l13 12 l13 -12 l13 12" fill="#FBF6EA" stroke="#D9CBB0" stroke-width="2"/><rect x="200" y="186" width="104" height="52" fill="#F27A1A"/><text x="252" y="212" text-anchor="middle" font-family="Poppins,sans-serif" font-weight="700" font-size="17" fill="#fff">BASMATI</text><text x="252" y="230" text-anchor="middle" font-family="Poppins,sans-serif" font-size="11" fill="#FFE3C7">RICE · 10 LB</text><path d="M212 250 V330" stroke="#fff" stroke-width="7" opacity=".6" stroke-linecap="round"/></g>
+      <g class="it"><rect x="312" y="176" width="48" height="160" rx="16" fill="url(#lassi)" stroke="#C9821A" stroke-width="2"/><rect x="324" y="134" width="24" height="50" rx="5" fill="url(#lassi)" stroke="#C9821A" stroke-width="2"/><rect x="321" y="120" width="30" height="18" rx="4" fill="#2E7D32"/><rect x="312" y="206" width="48" height="40" fill="#FFF8EC"/><text x="336" y="230" text-anchor="middle" font-family="Poppins,sans-serif" font-weight="700" font-size="11" fill="#C9520A">LASSI</text><path d="M320 254 V320" stroke="#fff" stroke-width="5" opacity=".5" stroke-linecap="round"/></g>
+      <g class="it"><path d="M196 330 L160 170 M198 330 L178 150 M200 330 L198 160 M202 330 L214 176 M194 330 L146 190" stroke="#4E9A3A" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="160" cy="168" r="13" fill="#3F9A38"/><circle cx="146" cy="186" r="12" fill="#3F9A38"/><circle cx="178" cy="148" r="14" fill="#3F9A38"/><circle cx="198" cy="158" r="13" fill="#3F9A38"/><circle cx="214" cy="174" r="12" fill="#3F9A38"/><circle cx="168" cy="152" r="10" fill="#3F9A38"/><circle cx="188" cy="140" r="10" fill="#3F9A38"/><circle cx="206" cy="148" r="9" fill="#3F9A38"/><circle cx="152" cy="172" r="9" fill="#3F9A38"/><circle cx="156" cy="162" r="6" fill="#5BBE4C"/><circle cx="176" cy="144" r="7" fill="#5BBE4C"/><circle cx="200" cy="152" r="6" fill="#5BBE4C"/><circle cx="146" cy="182" r="5" fill="#5BBE4C"/><circle cx="212" cy="170" r="6" fill="#5BBE4C"/><rect x="186" y="262" width="22" height="10" rx="3" fill="#F27A1A" transform="rotate(-6 197 267)"/></g>
+      <g class="it"><path d="M368 330 C360 270 378 214 426 190 C432 196 430 204 424 206 C394 226 382 274 388 330 Z" fill="#F5CE2E" stroke="#C99A0E" stroke-width="2"/><path d="M382 330 C374 270 396 214 436 200 C442 206 440 214 434 216 C410 226 396 274 402 330 Z" fill="#F9D94A" stroke="#C99A0E" stroke-width="2"/><path d="M396 330 C388 270 414 214 446 210 C452 216 450 224 444 226 C426 226 410 274 416 330 Z" fill="#EFC11E" stroke="#C99A0E" stroke-width="2"/><path d="M424 186 l14 -8 l6 14 l-12 6z" fill="#5A4A1E"/></g>
+      <g class="it"><ellipse cx="300" cy="250" rx="22" ry="44" fill="url(#egg)" transform="rotate(28 300 250)"/><path d="M318 212 C330 200 344 204 346 214 C336 210 328 216 322 222 Z" fill="#3F8F33"/><path d="M340 206 L352 192" stroke="#3F8F33" stroke-width="5" stroke-linecap="round"/><ellipse cx="290" cy="238" rx="5" ry="14" fill="#fff" opacity=".3" transform="rotate(28 290 238)"/></g>
+      <g class="it"><circle cx="236" cy="248" r="30" fill="url(#tom)"/><path d="M236 222 l6 -8 l2 10 l10 -2 l-8 7 l8 6 l-11 0 l-7 8 l-2 -10 l-10 2 l8 -7 l-8 -6 l11 0z" fill="#2F7D2A"/><ellipse cx="224" cy="238" rx="7" ry="4" fill="#fff" opacity=".45" transform="rotate(-35 224 238)"/></g>
+      <g class="it"><circle cx="384" cy="252" r="27" fill="url(#oni)"/><path d="M384 225 C380 214 386 206 392 202" stroke="#8A2F62" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M370 236 C364 250 366 266 374 274 M398 236 C404 250 402 266 394 274" stroke="#F0C6DC" stroke-width="2" fill="none" opacity=".8"/></g>
+      <g class="it"><path d="M412 262 C420 226 440 206 470 196 C446 214 432 236 424 266 Z" fill="#3E9A2E" stroke="#2C6E22" stroke-width="1.5"/><path d="M428 264 C440 232 462 216 486 214 C464 228 448 246 440 268 Z" fill="#4CAF3A" stroke="#2C6E22" stroke-width="1.5"/><path d="M470 196 l8 -6 M486 214 l9 -3" stroke="#5B7A2A" stroke-width="4" stroke-linecap="round"/></g>
+    </g>
+    <path d="M150 262 L450 262 L438 540 Q438 548 430 548 L170 548 Q162 548 162 540 Z" fill="url(#kraft)"/>
+    <path d="M150 262 L156 270 L162 262 L168 270 L174 262 L180 270 L186 262 L192 270 L198 262 L204 270 L210 262 L216 270 L222 262 L228 270 L234 262 L240 270 L246 262 L252 270 L258 262 L264 270 L270 262 L276 270 L282 262 L288 270 L294 262 L300 270 L306 262 L312 270 L318 262 L324 270 L330 262 L336 270 L342 262 L348 270 L354 262 L360 270 L366 262 L372 270 L378 262 L384 270 L390 262 L396 270 L402 262 L408 270 L414 262 L420 270 L426 262 L432 270 L438 262 L444 270 L450 262" fill="#C99558"/>
+    <path d="M196 286 L202 532 M404 286 L398 532" stroke="#B57E43" stroke-width="2" opacity=".5"/>
+    <path d="M214 270 C214 186 386 186 386 270" fill="none" stroke="#9C6A35" stroke-width="10" stroke-linecap="round"/>
+    <rect x="157" y="372" width="286" height="62" fill="#F27A1A" opacity=".95"/>
+    <text x="300" y="414" text-anchor="middle" font-family="'Playfair Display',serif" font-weight="800" font-size="31" fill="#fff">Ganesh Brothers</text>
+    <text x="300" y="352" text-anchor="middle" font-family="Poppins,sans-serif" font-weight="600" font-size="13" letter-spacing="3" fill="#7A4A1E">INDIAN GROCERY</text>
+    <text x="300" y="466" text-anchor="middle" font-family="Poppins,sans-serif" font-size="13" letter-spacing="2" fill="#7A4A1E">ELLICOTT CITY · MD</text>
+    <path d="M172 290 V530" stroke="#fff" stroke-width="10" opacity=".18" stroke-linecap="round"/>
+  </g>
+</svg>
         <svg class="float" style="--r:-20deg;top:48%;left:-6%;width:70px;height:84px"><use href="#leaf"/></svg>
         <svg class="float" style="--r:25deg;bottom:4%;left:12%;width:44px;height:52px;animation-delay:-3s"><use href="#leaf"/></svg>
-        <svg class="float" style="top:26%;right:-7%;width:110px;height:110px;animation-delay:-1.5s"><use href="#tomato"/></svg>
+        <svg class="float" style="top:28%;right:-4%;width:78px;height:78px;animation-delay:-1.5s"><use href="#tomato"/></svg>
         <svg class="float" style="--r:-35deg;bottom:-2%;right:4%;width:130px;height:46px;animation-delay:-4s"><use href="#chili"/></svg>
       </div>
     </div>
