@@ -1,0 +1,18 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "npm run build",
+  "outputDirectory": "public",
+  "functions": {
+    "api/app.js": {
+      "includeFiles": "{server/**,public/data/**}",
+      "maxDuration": 10
+    }
+  },
+  "rewrites": [
+    { "source": "/api/orders", "destination": "/api/app?__p=/api/orders" },
+    { "source": "/api/orders/:rest*", "destination": "/api/app?__p=/api/orders/:rest*" },
+    { "source": "/staff", "destination": "/api/app?__p=/staff" },
+    { "source": "/staff/:rest*", "destination": "/api/app?__p=/staff/:rest*" }
+  ]
+}

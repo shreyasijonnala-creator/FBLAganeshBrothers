@@ -6,7 +6,10 @@
   "scripts": {
     "start": "node server/server.js",
     "demo": "node server/server.js --demo",
-    "art": "node tools/make-art.js"
+    "art": "node tools/make-art.js",
+    "build": "echo 'The shop is static (public/); the server runs from api/app.js on Vercel.'"
   },
-  "engines": { "node": ">=18" }
+  "engines": {
+    "node": ">=18"
+  }
 }

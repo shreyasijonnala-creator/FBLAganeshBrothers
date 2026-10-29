@@ -424,7 +424,7 @@ a.bag{color:inherit}
 
 <header class="top">
   <div class="wrap">
-    <a class="logo" href="/staff" title="Staff sign in">Ganesh <em>Brothers</em></a>
+    <a class="logo" id="staffLink" href="/staff" title="Staff sign in">Ganesh <em>Brothers</em></a>
     <nav class="main" aria-label="Main">
       <a href="#top" data-nav="top" class="active">Home</a>
       <a href="#deals" data-nav="deals">Deals<span class="nav-n deal-n" id="dealCount"></span></a>
@@ -733,7 +733,7 @@ const store = {
   set(v){ try { localStorage.setItem('gb-list', JSON.stringify(v)); } catch {} }
 };
 let toastT;
-function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove('on'), 2200); }
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove('on'), Math.max(2200, msg.length * 60)); }
 
 /* ---------- shopping list state ---------- */
 let list = store.get().filter(x => !x.pid || byId[x.pid]); // [{key,pid,name,qty,done,notes:[]}]
@@ -1296,6 +1296,22 @@ $('#customForm').addEventListener('submit', e => {
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') openList(false);
   if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('article.recipe')) { e.preventDefault(); openRecipe(e.target.dataset.id); }
+});
+// The staff dashboard only exists when the site runs on the store's server (npm start), not when the page
+// is opened as a file or from GitHub Pages — check first so the logo never leads to an error page.
+$('#staffLink').addEventListener('click', async e => {
+  e.preventDefault();
+  const why = location.protocol === 'file:'
+    ? 'This page was opened as a file. Start the store server (npm start) and open http://localhost:3000, then click the logo.'
+    : 'The staff dashboard needs the store server, which isn’t running on this website.';
+  if (location.protocol === 'file:') return toast(why);
+  try {
+    const r = await fetch('/staff', {cache:'no-store'});
+    if (!(r.ok && /Staff/.test(await r.text()))) return toast(why);
+    // Staff pages refuse to load inside frames (e.g. VS Code's built-in browser), so open them in a real tab there.
+    if (window.top !== window) { window.open(new URL('/staff', location.href).href, '_blank'); toast('Staff dashboard opened in a new browser tab'); }
+    else location.href = '/staff';
+  } catch { toast(why); }
 });
 document.addEventListener('submit', e => {
   if (e.target.id === 'checkoutForm') { e.preventDefault(); placeOrder(e.target); }

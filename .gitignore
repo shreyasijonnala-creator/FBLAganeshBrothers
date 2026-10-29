@@ -4,3 +4,6 @@ server/orders.json
 server/orders.json.tmp
 server/staff.json
 server/staff.json.tmp
+server/secret.json
+server/secret.json.tmp
+.vercel/
