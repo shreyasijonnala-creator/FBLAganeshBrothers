@@ -26,8 +26,12 @@ async function load() {
   meta = data.staff || {};
   SECRET = process.env.SESSION_SECRET || (data.secret && data.secret.key);
   if (!SECRET) { SECRET = crypto.randomBytes(32).toString('hex'); await storage.save('secret', { key: SECRET }); }
-  // On Vercel, SEED_DEMO=1 adds sample orders once so the statistics have data.
-  if (process.env.SEED_DEMO === '1' && !meta.demoSeeded) { seedDemo(); await persist(); meta = { demoSeeded: true }; await storage.save('staff', meta); }
+  // Test information: the first time the server runs with no orders (e.g. a new Vercel deployment), add sample
+  // orders so the order board and statistics have data. Only once — "Remove demo orders" keeps them gone.
+  // Set SEED_DEMO=0 to turn this off.
+  if (!meta.demoSeeded && !orders.length && process.env.SEED_DEMO !== '0') {
+    seedDemo(); await persist(); meta = { ...meta, demoSeeded: true }; await storage.save('staff', meta);
+  }
 }
 const persist = () => storage.save('orders', orders);
 
@@ -172,7 +176,7 @@ function stats(days) {
   };
 }
 
-/* ---------- demo data (npm run demo, or SEED_DEMO=1 on Vercel) ---------- */
+/* ---------- demo data (added automatically to an empty store, or with npm run demo) ---------- */
 function seedDemo() {
   const popular = ['tata-sampann-toor-dal', 'india-gate-basmati-rice', 'onion', 'tomato', 'potato', 'green-chili', 'ginger', 'garlic', 'coriander-leaves',
     'amul-milk', 'amul-masti-dahi', 'amul-ghee', 'mother-dairy-paneer', 'haldirams-aloo-bhujia', 'parle-g-biscuits', 'maggi-2-minute-noodles', 'tata-tea-gold',
@@ -197,8 +201,27 @@ function seedDemo() {
     o.status = o.history[o.history.length - 1].status; o.updatedAt = o.history[o.history.length - 1].at;
     orders.push(o);
   }
+  // A few live orders from the last hour so every column of the order board has something in it.
+  const live = [
+    ['received', 4, 'Asha P.', 'As soon as possible (about 30 min)', 'Please pick ripe mangoes'],
+    ['received', 12, 'Ravi K.', 'Today 6:30 PM', ''],
+    ['preparing', 19, 'Sunita M.', 'As soon as possible (about 30 min)', 'Call if the paneer is sold out'],
+    ['preparing', 27, 'Deepak S.', 'Today 7:00 PM', ''],
+    ['ready', 41, 'Fatima A.', 'As soon as possible (about 30 min)', ''],
+  ];
+  live.forEach(([status, minsAgo, who, pickup, notes], i) => {
+    const picks = new Map();
+    for (let k = 0; k < 4 + rnd(5); k++) { const id = popular[rnd(popular.length)]; picks.set(id, (picks.get(id) || 0) + 1); }
+    const o = buildOrder({ name: who, phone: '410-555-02' + String(i).padStart(2, '0'), pickup, notes, items: [...picks].map(([pid, qty]) => ({ pid, qty })) });
+    const created = Date.now() - minsAgo * 60000;
+    o.demo = true; o.createdAt = created; o.history = [{ status: 'received', at: created }];
+    if (status !== 'received') o.history.push({ status: 'preparing', at: created + 3 * 60000 });
+    if (status === 'ready') o.history.push({ status: 'ready', at: created + 25 * 60000 });
+    o.status = status; o.updatedAt = o.history[o.history.length - 1].at;
+    orders.push(o);
+  });
   orders.sort((a, b) => a.createdAt - b.createdAt);
-  console.log('Added 90 demo orders.');
+  console.log('Added 95 demo orders (5 still in progress).');
 }
 
 /* ---------- routes ---------- */

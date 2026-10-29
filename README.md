@@ -11,7 +11,7 @@ Needs [Node.js](https://nodejs.org) 18 or newer. No packages to install.
 
 ```sh
 npm start          # shop: http://localhost:3000   staff: http://localhost:3000/staff (password gb2026)
-npm run demo       # same, plus 90 sample orders so the statistics have data
+npm run demo       # same, and makes sure the sample orders are there
 ```
 
 The staff password is **gb2026**. To use a different one without changing the code, set `STAFF_PASSWORD` (on Vercel: Settings → Environment Variables). Signed-in staff can see the current password on the dashboard's Settings tab.
@@ -35,9 +35,10 @@ The staff password is **gb2026**. To use a different one without changing the co
 1. Push this repo to GitHub, then on [vercel.com](https://vercel.com) choose **Add New → Project** and import it. Leave the settings as they are — `vercel.json` already sets everything up — and click **Deploy**.
 2. Optional — in the project, open **Settings → Environment Variables** and add:
    - `STAFF_PASSWORD` — optional; replaces the built-in password **gb2026** (recommended, since the repo is public).
-   - `SEED_DEMO` = `1` — optional, adds 90 sample orders once so the statistics have data.
-3. Open **Storage**, add **Upstash Redis** (free tier), and connect it to the project. This is where orders are saved. Without it everything still works, but saved data can reset and the staff dashboard shows a warning.
+3. Open **Storage**, add **Upstash Redis** (free tier), and connect it to the project. This is where orders are saved. Without it everything still works, but saved orders can reset now and then.
 4. **Redeploy** (Deployments → ⋯ → Redeploy) so the new settings take effect.
+
+A new deployment starts with test information — 95 sample orders (5 still in progress) — so the order board and statistics have data. Staff can clear it with **Remove demo orders** on the Statistics tab, and it won't come back. Set `SEED_DEMO` = `0` to start empty instead.
 
 Customers use `https://your-project.vercel.app/`. Staff click the logo or go to `/staff`.
 
