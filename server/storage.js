@@ -1,4 +1,4 @@
-// Where the server keeps its data (orders, staff password, session key).
+// Where the server keeps its data (orders, the session key, and a note of whether demo orders were added).
 //  - Upstash Redis when its settings are present (Vercel → Storage → Upstash adds them automatically).
 //  - Otherwise JSON files: in server/ on your computer, or /tmp on Vercel (temporary — may reset).
 const fs = require('fs');

@@ -12,25 +12,23 @@ const { INVENTORY_ITEMS, INVENTORY_CATEGORIES } = require('../public/data/invent
 const PUBLIC = path.join(__dirname, '..', 'public');
 const TZ = 'America/New_York';
 
+// The staff password. STAFF_PASSWORD (e.g. in Vercel's Environment Variables) overrides the built-in one.
+const PASSWORD = process.env.STAFF_PASSWORD || 'gb2026';
+// Sessions are tied to the password, so if it changes everyone has to sign in again.
+const PW_VERSION = crypto.createHash('sha256').update(PASSWORD).digest('hex').slice(0, 8);
+
 // State is loaded from storage at the start of every request, because on Vercel each request may run on a
-// different machine. The staff password is stored readable (not hashed) on purpose: signed-in staff can view
-// it on the Settings tab. STAFF_PASSWORD only sets the first password, before anyone changes it.
-let orders = [], staff = null, SECRET = '';
+// different machine. `meta` remembers whether demo orders were added.
+let orders = [], meta = {}, SECRET = '';
 async function load() {
   const data = await storage.loadAll();
   orders = data.orders || [];
-  staff = data.staff;
-  if (!staff || !staff.password) {
-    staff = { password: process.env.STAFF_PASSWORD || crypto.randomBytes(6).toString('base64url'), version: 1, changedAt: null };
-    if (!process.env.STAFF_PASSWORD) console.log(`\nNo STAFF_PASSWORD set. Staff password: ${staff.password}\n`);
-    await saveStaff();
-  }
+  meta = data.staff || {};
   SECRET = process.env.SESSION_SECRET || (data.secret && data.secret.key);
   if (!SECRET) { SECRET = crypto.randomBytes(32).toString('hex'); await storage.save('secret', { key: SECRET }); }
   // On Vercel, SEED_DEMO=1 adds sample orders once so the statistics have data.
-  if (process.env.SEED_DEMO === '1' && !staff.demoSeeded) { seedDemo(); await persist(); staff.demoSeeded = true; await saveStaff(); }
+  if (process.env.SEED_DEMO === '1' && !meta.demoSeeded) { seedDemo(); await persist(); meta = { demoSeeded: true }; await storage.save('staff', meta); }
 }
-const saveStaff = () => storage.save('staff', staff);
 const persist = () => storage.save('orders', orders);
 
 const byId = Object.fromEntries(INVENTORY_ITEMS.map(p => [p.id, p]));
@@ -76,14 +74,13 @@ const sign = v => crypto.createHmac('sha256', SECRET).update(v).digest('base64ur
 function cookies(req) {
   return Object.fromEntries((req.headers.cookie || '').split(';').map(c => c.trim().split('=')).filter(p => p.length === 2));
 }
-// A session is tied to the password version, so changing the password signs everyone else out.
 function isStaff(req) {
   const t = cookies(req).gb_staff; if (!t) return false;
   const [exp, ver, sig] = t.split('.');
-  return !!exp && !!sig && safeEqual(sig, sign(exp + '.' + ver)) && Number(exp) > Date.now() && Number(ver) === staff.version;
+  return !!exp && !!sig && safeEqual(sig, sign(exp + '.' + ver)) && Number(exp) > Date.now() && ver === PW_VERSION;
 }
 function sessionCookie(req) {
-  const exp = String(Date.now() + 12 * 3600e3), ver = String(staff.version);
+  const exp = String(Date.now() + 12 * 3600e3), ver = PW_VERSION;
   const secure = req.headers['x-forwarded-proto'] === 'https' ? '; Secure' : '';
   return `gb_staff=${exp}.${ver}.${sign(exp + '.' + ver)}; HttpOnly; SameSite=Strict; Path=/; Max-Age=43200${secure}`;
 }
@@ -240,7 +237,7 @@ async function handle(req, res) {
   if (p === '/staff/login' && req.method === 'POST') {
     if (limited('login:' + clientIp(req), 10, 15 * 60e3)) return send(res, 429, { error: 'Too many attempts. Try again in 15 minutes.' });
     let body = {}; try { body = await readJson(req, 2000); } catch {}
-    if (!safeEqual(body.password || '', staff.password)) return send(res, 401, { error: 'Wrong password.' });
+    if (!safeEqual(body.password || '', PASSWORD)) return send(res, 401, { error: 'Wrong password.' });
     return send(res, 200, { ok: true }, undefined, { 'Set-Cookie': sessionCookie(req) });
   }
   if (p === '/staff/logout' && req.method === 'POST') return send(res, 200, { ok: true }, undefined, { 'Set-Cookie': 'gb_staff=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0' });
@@ -259,18 +256,7 @@ async function handle(req, res) {
       o.status = body.status; o.updatedAt = Date.now(); o.history.push({ status: body.status, at: o.updatedAt }); await persist();
       return send(res, 200, staffView(o));
     }
-    if (p === '/staff/api/password' && req.method === 'GET') return send(res, 200, { password: staff.password, changedAt: staff.changedAt });
-    if (p === '/staff/api/password' && req.method === 'POST') {
-      let body = {}; try { body = await readJson(req, 2000); } catch {}
-      const pw = String(body.password || '');
-      if (pw.length < 6 || pw.length > 64) return send(res, 400, { error: 'Use 6 to 64 characters.' });
-      if (/\s/.test(pw)) return send(res, 400, { error: "Passwords can't contain spaces." });
-      if (pw === staff.password) return send(res, 400, { error: "That's already the password." });
-      staff = { password: pw, version: staff.version + 1, changedAt: Date.now(), demoSeeded: staff.demoSeeded }; await saveStaff();
-      console.log('Staff password changed.');
-      // keep this person signed in; everyone else has to sign in again with the new password
-      return send(res, 200, { password: staff.password, changedAt: staff.changedAt }, undefined, { 'Set-Cookie': sessionCookie(req) });
-    }
+    if (p === '/staff/api/password' && req.method === 'GET') return send(res, 200, { password: PASSWORD, fromSettings: !!process.env.STAFF_PASSWORD });
     if (p === '/staff/api/storage' && req.method === 'GET') return send(res, 200, { kind: storage.kind });
     if (p === '/staff/api/stats' && req.method === 'GET') return send(res, 200, stats(Number(url.searchParams.get('days')) || 0));
     if (p === '/staff/api/demo/clear' && req.method === 'POST') { orders = orders.filter(o => !o.demo); await persist(); return send(res, 200, { ok: true }); }

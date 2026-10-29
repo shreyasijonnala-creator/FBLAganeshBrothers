@@ -10,11 +10,11 @@ Website for Ganesh Brothers, an Indian grocery in Ellicott City, MD.
 Needs [Node.js](https://nodejs.org) 18 or newer. No packages to install.
 
 ```sh
-STAFF_PASSWORD=choose-a-password npm start      # shop: http://localhost:3000   staff: http://localhost:3000/staff
-STAFF_PASSWORD=choose-a-password npm run demo   # same, plus 90 sample orders so the statistics have data
+npm start          # shop: http://localhost:3000   staff: http://localhost:3000/staff (password gb2026)
+npm run demo       # same, plus 90 sample orders so the statistics have data
 ```
 
-`STAFF_PASSWORD` sets the **first** staff password. After that, staff can view and change the password on the dashboard's **Settings** tab. A change applies to every staff member right away, signs everyone else out, and survives restarts (it's saved in `server/staff.json`, which isn't committed). To reset a forgotten password, delete `server/staff.json` and restart with a new `STAFF_PASSWORD`. If no password is set at all, the server prints one when it starts.
+The staff password is **gb2026**. To use a different one without changing the code, set `STAFF_PASSWORD` (on Vercel: Settings → Environment Variables). Signed-in staff can see the current password on the dashboard's Settings tab.
 
 ## Folders
 
@@ -28,16 +28,15 @@ STAFF_PASSWORD=choose-a-password npm run demo   # same, plus 90 sample orders so
 | `api/app.js`, `vercel.json` | Run the same server on Vercel. |
 | `server/staff.html`, `server/login.html` | Staff pages. Served only through `/staff` after signing in — never as public files. |
 | `server/orders.json` | Saved orders (created automatically, not committed). |
-| `server/staff.json` | The current staff password (created automatically, not committed). |
 | `tools/make-art.js` | Draws the product pictures in `public/images/`. Run `npm run art` after editing the inventory. |
 
 ## Put it online with Vercel (shop + staff dashboard)
 
 1. Push this repo to GitHub, then on [vercel.com](https://vercel.com) choose **Add New → Project** and import it. Leave the settings as they are — `vercel.json` already sets everything up — and click **Deploy**.
-2. In the project, open **Settings → Environment Variables** and add:
-   - `STAFF_PASSWORD` — the first staff password (staff can change it later on the dashboard's Settings tab).
+2. Optional — in the project, open **Settings → Environment Variables** and add:
+   - `STAFF_PASSWORD` — optional; replaces the built-in password **gb2026** (recommended, since the repo is public).
    - `SEED_DEMO` = `1` — optional, adds 90 sample orders once so the statistics have data.
-3. Open **Storage**, add **Upstash Redis** (free tier), and connect it to the project. This is where orders and the staff password are saved. Without it everything still works, but saved data can reset and the staff dashboard shows a warning.
+3. Open **Storage**, add **Upstash Redis** (free tier), and connect it to the project. This is where orders are saved. Without it everything still works, but saved data can reset and the staff dashboard shows a warning.
 4. **Redeploy** (Deployments → ⋯ → Redeploy) so the new settings take effect.
 
 Customers use `https://your-project.vercel.app/`. Staff click the logo or go to `/staff`.
